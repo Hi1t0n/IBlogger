@@ -41,9 +41,8 @@ public static class UserEndpoints
                         (new Response((int)HttpStatusCode.Conflict, validateResult.Message));
             }
         }
-        
+
         var user = contract.ToModel();
-        
         await repository.AddUserAsync(user, cancellationToken);
 
         return Results.Ok();
@@ -68,7 +67,6 @@ public static class UserEndpoints
     private static async Task<IResult> GetUsersAsync(CancellationToken cancellationToken, IUserRepository repository)
     {
         var result = await repository.GetUsersAsync(cancellationToken);
-
         var response = result.Select(x => x.ToResponse());
 
         return Results.Ok(response);
@@ -93,7 +91,6 @@ public static class UserEndpoints
         }
         
         var user = contract.ToModel();
-        
         var result = await repository.UpdateUserByIdAsync(userId, user, cancellationToken);
 
         if (result is null)
