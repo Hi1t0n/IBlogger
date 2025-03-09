@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Игнорировать файлы и папки, связанные с Visual Studio
 .vs/
 *.user
@@ -91,3 +92,26 @@ Desktop.ini
 *.user
 *.suo
 *.userprefs
+=======
+.vs
+/.git
+/.idea
+/Backend/UserService/logs
+/Backend/UserService/.idea
+/Backend/UserService/obj
+/Backend/UserService/UserService.Domain/bin
+/Backend/UserService/UserService.Domain/obj
+/Backend/UserService/UserService.Host/bin
+/Backend/UserService/UserService.Host/obj
+/Backend/UserService/UserService.Infrastructure/bin
+/Backend/UserService/UserService.Infrastructure/obj
+/Backend/PostService/logs
+/Backend/PostService/.idea
+/Backend/PostService/obj
+/Backend/PostService/PostService.Domain/bin
+/Backend/PostService/PostService.Domain/obj
+/Backend/PostService/PostService.Host/bin
+/Backend/PostService/PostService.Host/obj
+/Backend/PostService/PostService.Infrastructure/bin
+/Backend/PostService/PostService.Infrastructure/obj
+>>>>>>> 8f5948d46e692ef2e0e6396bb0fbbf29e85a0f57
