@@ -31,7 +31,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     {
         var key = $"{id}_user";
         
-        User? user;
+        var user = new User();
         
         var cache = await _distributedCache.GetStringAsync(key, cancellationToken);
 
@@ -62,7 +62,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     {
         var key = $"users";
 
-        List<User>? users;
+        var users = new List<User>();
         
         var cache = await _distributedCache.GetStringAsync(key, cancellationToken);
         
@@ -72,7 +72,6 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
             users = JsonSerializer.Deserialize<List<User>>(cache, Constants.JsonSerializerOptions);
             return users;
         }
-        
         
         users = await _context.Users
             .Include(x=> x.Role)

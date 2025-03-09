@@ -8,6 +8,7 @@ public class PostCategoryConfiguration : IEntityTypeConfiguration<PostCategory>
 {
     public void Configure(EntityTypeBuilder<PostCategory> builder)
     {
+        builder.ToTable("PostCategoryMap");
         builder.HasKey(x => new { x.CategoryId, x.PostId });
 
         builder.HasOne(x => x.Post)

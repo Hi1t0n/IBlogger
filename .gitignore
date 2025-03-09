@@ -1,20 +1,93 @@
-/.git
-/.idea
-/Backend/UserService/logs
-/Backend/UserService/.idea
-/Backend/UserService/obj
-/Backend/UserService/UserService.Domain/bin
-/Backend/UserService/UserService.Domain/obj
-/Backend/UserService/UserService.Host/bin
-/Backend/UserService/UserService.Host/obj
-/Backend/UserService/UserService.Infrastructure/bin
-/Backend/UserService/UserService.Infrastructure/obj
-/Backend/PostService/logs
-/Backend/PostService/.idea
-/Backend/PostService/obj
-/Backend/PostService/PostService.Domain/bin
-/Backend/PostService/PostService.Domain/obj
-/Backend/PostService/PostService.Host/bin
-/Backend/PostService/PostService.Host/obj
-/Backend/PostService/PostService.Infrastructure/bin
-/Backend/PostService/PostService.Infrastructure/obj
+# Игнорировать файлы и папки, связанные с Visual Studio
+.vs/
+*.user
+*.suo
+*.userprefs
+*.vsp
+*.vspscc
+*.sln.iml
+
+# Игнорировать файлы и папки, связанные с Rider/IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Игнорировать логи
+**/logs/
+
+# Игнорировать папки сборки и объектные файлы
+**/bin/
+**/obj/
+
+# Игнорировать файлы NuGet
+**/*.nupkg
+**/packages/
+**/NuGet.exe
+**/NuGet.Config
+**/nuget.exe
+**/nuget.config
+
+# Игнорировать файлы резервных копий
+*.bak
+*.tmp
+*.temp
+
+# Игнорировать файлы локальных настроек
+*.local
+*.local.*
+
+# Игнорировать файлы, специфичные для macOS
+.DS_Store
+
+# Игнорировать файлы, специфичные для Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Игнорировать файлы, специфичные для Linux/Unix
+*~
+*.swp
+*.swo
+
+# Игнорировать файлы тестовых покрытий
+*.coverage
+*.coveragexml
+
+# Игнорировать файлы Docker
+**/docker-compose.override.yml
+**/docker-compose.vs.debug.yml
+**/docker-compose.vs.release.yml
+
+# Игнорировать файлы Azure
+**/azure-pipelines.yml
+**/azure-pipelines*.yml
+
+# Игнорировать файлы Rider/IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Игнорировать файлы Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Игнорировать файлы dotnet tools
+.dotnet/
+.dotnet-tools.json
+
+# Игнорировать файлы Rider
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Игнорировать файлы пользовательских настроек
+*.user
+*.suo
+*.userprefs

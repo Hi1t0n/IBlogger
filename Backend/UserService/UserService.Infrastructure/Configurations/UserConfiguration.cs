@@ -5,8 +5,15 @@ using UserService.Domain.Models;
 
 namespace UserService.Infrastructure.Configurations;
 
+/// <summary>
+/// Конфигуратор модели пользователей.
+/// </summary>
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
+    /// <summary>
+    /// Конфигурация.
+    /// </summary>
+    /// <param name="builder"><see cref="EntityTypeBuilder"/>.</param>
     public void Configure(EntityTypeBuilder<User> builder)
     {
         builder.HasKey(x => x.UserId);

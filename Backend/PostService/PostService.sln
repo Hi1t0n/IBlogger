@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.Domain", "PostS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostService.Infrastructure", "PostService.Infrastructure\PostService.Infrastructure.csproj", "{28FDAF49-883B-475D-895A-AF635BE32606}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseLibrary", "..\BaseLibrary\BaseLibrary.csproj", "{3480D356-989E-410B-AAAC-3BB059B7DD72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{28FDAF49-883B-475D-895A-AF635BE32606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28FDAF49-883B-475D-895A-AF635BE32606}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28FDAF49-883B-475D-895A-AF635BE32606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3480D356-989E-410B-AAAC-3BB059B7DD72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3480D356-989E-410B-AAAC-3BB059B7DD72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3480D356-989E-410B-AAAC-3BB059B7DD72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3480D356-989E-410B-AAAC-3BB059B7DD72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
