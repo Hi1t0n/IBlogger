@@ -2,28 +2,29 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 
 WORKDIR /src
 
-COPY *.sln .
+COPY UserService/*.sln ./UserService/
 
-COPY UserService.Host/*.csproj ./UserService.Host/
-COPY UserService.Domain/*.csproj ./UserService.Domain/
-COPY UserService.Infrastructure/*.csproj ./UserService.Infrastructure/
+COPY UserService/UserService.Domain/*.csproj ./UserService/UserService.Domain/
+COPY UserService/UserService.Infrastructure/*.csproj ./UserService/UserService.Infrastructure/
+COPY UserService/UserService.Host/*.csproj ./UserService/UserService.Host/
 
-RUN dotnet restore -r linux-musl-x64
+RUN dotnet restore ./UserService/UserService.sln
 
-COPY UserService.Host/. ./UserService.Host/
-COPY UserService.Domain/. ./UserService.Domain/
-COPY UserService.Infrastructure/. ./UserService.Infrastructure/
+COPY UserService/UserService.Domain/. ./UserService/UserService.Domain/
+COPY UserService/UserService.Infrastructure/. ./UserService/UserService.Infrastructure/
+COPY UserService/UserService.Host/. ./UserService/UserService.Host/
 
-RUN dotnet build 
+RUN dotnet build ./UserService/UserService.sln
 
-RUN dotnet publish -c Release -o /out -r linux-musl-x64
+WORKDIR /src/UserService/UserService.Host
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS publish
+RUN dotnet publish -c Release -o /app
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS runtime
 
 WORKDIR /app
 
-COPY --from=build /out .
+COPY --from=build /app .
 
-EXPOSE 5160
-
-ENTRYPOINT ["./UserService.Host"]
+EXPOSE 5229
+ENTRYPOINT dotnet UserService.Host.dll

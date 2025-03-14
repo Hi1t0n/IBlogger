@@ -4,8 +4,12 @@ using PostService.Infrastructure.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionStringDb = builder.Environment.IsDevelopment()
-    ? builder.Configuration.GetConnectionString(ConnectionStrings.ConnectionStringDb)!
-    : Environment.GetEnvironmentVariable(ConnectionStrings.ConnectionStringDb)!;
+    ? builder.Configuration.GetConnectionString(ConnectionStrings.Postgre)!
+    : Environment.GetEnvironmentVariable(ConnectionStrings.Postgre)!;
+
+var connectionStringRedis = builder.Environment.IsDevelopment()
+    ? builder.Configuration.GetConnectionString(ConnectionStrings.Redis)!
+    : Environment.GetEnvironmentVariable(ConnectionStrings.Redis)!;
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

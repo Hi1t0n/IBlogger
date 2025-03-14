@@ -64,6 +64,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
     public async Task<Result<Post?>> UpdateById(Guid id, Post updateData, CancellationToken cancellationToken)
     {
         var post = await _context.Posts
+            .Include(x=> x.PostCategories)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (post is null)
@@ -81,19 +82,17 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
             if (updateData.PostCategories.Any())
             {
-                var postCategories = _context.PostCategories
-                    .Where(x => x.PostId == id);
-
-                _context.PostCategories.RemoveRange(postCategories);
-                await _context.PostCategories.AddRangeAsync(updateData.PostCategories, cancellationToken);
+                _context.PostCategories.RemoveRange(post.PostCategories);
             }
+            
+            await _context.PostCategories.AddRangeAsync(updateData.PostCategories, cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
             await _context.Database.CommitTransactionAsync(cancellationToken);
 
             return Result<Post>.Success(post)!;
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
             await _context.Database.RollbackTransactionAsync(cancellationToken);
             throw;
@@ -102,7 +101,9 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
     public async Task<Result<Post?>> DeleteById(Guid id, CancellationToken cancellationToken)
     {
-        var post = await _context.Posts.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var post = await _context.Posts
+            .Include(x=> x.PostCategories)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (post is null)
         {
@@ -112,13 +113,8 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
         try
         {
             await _context.Database.BeginTransactionAsync(cancellationToken);
-
-            var postCategories = await _context.PostCategories
-                .Where(x => x.PostId == id)
-                .ToListAsync(cancellationToken);
             
-            _context.PostCategories.RemoveRange(postCategories);
-
+            _context.PostCategories.RemoveRange(post.PostCategories);
             _context.Posts.Remove(post);
 
             await _context.SaveChangesAsync(cancellationToken);
@@ -126,7 +122,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
             return Result<Post>.Success(post)!;
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
             await _context.Database.RollbackTransactionAsync(cancellationToken);
             throw;

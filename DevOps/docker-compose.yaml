@@ -1,11 +1,9 @@
-version: '3.9'
-
 services:
   user-service:
     container_name: "user-service"
     build:
-      context: ../Backend/UserService/
-      dockerfile: Dockerfile
+      context: ../Backend/
+      dockerfile: ./UserService/Dockerfile
     ports:
       - "5160:5160"
     links:
@@ -20,7 +18,6 @@ services:
       - CONNECTION_STRING_USER_SERVICE=Host=user-service-postgreSQL;Username=postgres;password=23022005;Database=UserServiceDB;
       - CONNECTION_STRING_REDIS_USER_SERVICE=user-service-redis:6379
 
-
   user-service-postgreSQL:
     container_name: "user-service-postgreSQL"
     image: postgres:17-alpine
@@ -33,6 +30,20 @@ services:
       - POSTGRES_PASSWORD=23022005
     volumes:
       - user-service-postgre-volume:/var/lib/postgresql/data
+    
+  post-service-postgreSQL:
+    container_name: "post-service-postgreSQL"
+    image: postgres:17-alpine
+    ports:
+      - "5433:5433"
+    restart: always
+    environment:
+      - POSTGRES_DB=PostServiceDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=23022005
+    volumes:
+      - post-service-postgre-volume:/var/lib/postgresql/data
+
   
   user-service-redis:
     container_name: "user-service-redis"
@@ -42,9 +53,22 @@ services:
     restart: always
     volumes:
       - user-service-redis-volume:/data
+  
+  post-service-redis:
+    container_name: "post-service-redis"
+    image: redis:7.4.2-alpine
+    ports:
+      - "6380:6380"
+    restart: always
+    volumes:
+      - post-service-redis-volume:/data
 
 volumes:
   user-service-postgre-volume:
     driver: local
+  post-service-postgre-volume:
+    driver: local
   user-service-redis-volume:
+    driver: local
+  post-service-redis-volume:
     driver: local

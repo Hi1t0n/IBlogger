@@ -2,5 +2,6 @@
 
 public static class ConnectionStrings
 {
-    public static string ConnectionStringDb = "ConnectionStringDb";
+    public static readonly string Postgre = "CONNECTION_STRING_POSTGRE";
+    public static readonly string Redis = "CONNECTION_STRING_REDIS";
 }
