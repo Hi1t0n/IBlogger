@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BaseLibrary.Classes;
+using BaseLibrary.Classes.Result;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.Domain;
@@ -17,48 +19,46 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     private readonly IDistributedCache _distributedCache = distributedCache;
     
     ///<inheritdoc/>
-    public async Task<User?> AddUserAsync(User user, CancellationToken cancellationToken)
+    public async Task<Result<User>> Create(User user, CancellationToken cancellationToken)
     {
         var result = await _context.Users.AddAsync(user, cancellationToken);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return result.Entity;
+        return Result<User>.Success(result.Entity);
     }
 
     ///<inheritdoc/>
-    public async Task<User?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<User>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var key = $"{id}_user";
-        
-        var user = new User();
         
         var cache = await _distributedCache.GetStringAsync(key, cancellationToken);
 
         if (!string.IsNullOrEmpty(cache))
         {
-            user = JsonSerializer.Deserialize<User>(cache, Constants.JsonSerializerOptions);
-            return user;
+            var cacheUser = JsonSerializer.Deserialize<User>(cache, Constants.JsonSerializerOptions);
+            return Result<User>.Success(cacheUser!);
         }
         
-        user = await _context.Users
+        var user = await _context.Users
             .Include(x=> x.Role)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.UserId == id && !x.IsDelete, cancellationToken);
             
         if (user is null)
         {
-            return null;
+            return Result<User>.Failed($"{nameof(User)} c Id: {id} не найден", ResultType.NotFound)!;
         }
 
         await _distributedCache.SetStringAsync(key, JsonSerializer.Serialize(user, Constants.JsonSerializerOptions),
             Constants.DistributedCacheEntryOptions, cancellationToken);
 
-        return user;
+        return Result<User>.Success(user);
     }
 
     ///<inheritdoc/>
-    public async Task<IReadOnlyCollection<User>?> GetUsersAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<User>?> Get(CancellationToken cancellationToken)
     {
         var key = $"users";
 
@@ -86,13 +86,13 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     }
 
     ///<inheritdoc/>
-    public async Task<User?> UpdateUserByIdAsync(Guid id, User user, CancellationToken cancellationToken)
+    public async Task<Result<User>> UpdateById(Guid id, User user, CancellationToken cancellationToken)
     {
         var updatingEntity = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
 
         if (updatingEntity is null)
         {
-            return null;
+            return Result<User>.Failed($"{nameof(User)} c Id: {id} не найден", ResultType.NotFound)!;
         }
 
         updatingEntity.UserName = user.UserName;
@@ -102,18 +102,18 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
         var result = _context.Users.Update(updatingEntity);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return result.Entity;
+        return Result<User>.Success(result.Entity);
     }
 
     ///<inheritdoc/>
-    public async Task<User?> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<User>> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var deletingUser =
             await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDelete, cancellationToken);
 
         if (deletingUser is null)
         {
-            return null;
+            return Result<User>.Failed($"{nameof(User)} c Id: {id} не найден", ResultType.NotFound)!;
         }
 
         deletingUser.IsDelete = true;
@@ -122,7 +122,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
         await _context.SaveChangesAsync(cancellationToken);
         
 
-        return result.Entity;
+        return Result<User>.Success(result.Entity);
     }
 
     ///<inheritdoc/>

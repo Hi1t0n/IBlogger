@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using BaseLibrary.Classes.Result;
 using UserService.Domain;
 using UserService.Domain.Contacts;
 using UserService.Domain.Interfaces;
@@ -43,7 +44,7 @@ public static class UserEndpoints
         }
 
         var user = contract.ToModel();
-        await repository.AddUserAsync(user, cancellationToken);
+        await repository.Create(user, cancellationToken);
 
         return Results.Ok();
     }
@@ -51,23 +52,29 @@ public static class UserEndpoints
     private static async Task<IResult> GetUserByIdAsync(Guid userId, CancellationToken cancellationToken,
         IUserRepository repository)
     {
-        var result = await repository.GetUserByIdAsync(userId, cancellationToken);
+        var result = await repository.GetById(userId, cancellationToken);
         
-        if(result is null)
+        if(!result.IsSuccess)
         {
-            return Results.NotFound
-                (new Response((int)HttpStatusCode.NotFound, $"User with Id: {userId} Not Found"));
+            switch (result.ResultType)
+            {
+                case ResultType.NotFound:
+                    return Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message));
+                
+                case ResultType.BadRequest:
+                    return Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message));
+            }
         }
 
-        var response = result.ToResponse();
+        var response = result.Value!.ToResponse();
 
         return Results.Ok(response);
     }
 
     private static async Task<IResult> GetUsersAsync(CancellationToken cancellationToken, IUserRepository repository)
     {
-        var result = await repository.GetUsersAsync(cancellationToken);
-        var response = result.Select(x => x.ToResponse());
+        var result = await repository.Get(cancellationToken);
+        var response = result!.Select(x => x.ToResponse());
 
         return Results.Ok(response);
     }
@@ -91,12 +98,18 @@ public static class UserEndpoints
         }
         
         var user = contract.ToModel();
-        var result = await repository.UpdateUserByIdAsync(userId, user, cancellationToken);
+        var result = await repository.UpdateById(userId, user, cancellationToken);
 
-        if (result is null)
+        if(!result.IsSuccess)
         {
-            return Results.NotFound
-                (new Response((int)HttpStatusCode.NotFound, $"User with Id: {userId} Not Found"));
+            switch (result.ResultType)
+            {
+                case ResultType.NotFound:
+                    return Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message));
+                
+                case ResultType.BadRequest:
+                    return Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message));
+            }
         }
 
         return Results.Ok();
@@ -106,12 +119,18 @@ public static class UserEndpoints
         IUserRepository repository)
 
     {
-        var result = await repository.DeleteUserByIdAsync(userId, cancellationToken);
+        var result = await repository.DeleteById(userId, cancellationToken);
 
-        if (result is null)
+        if(!result.IsSuccess)
         {
-            return Results.NotFound
-                (new Response((int)HttpStatusCode.NotFound, $"User with Id: {userId} Not Found"));
+            switch (result.ResultType)
+            {
+                case ResultType.NotFound:
+                    return Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message));
+                
+                case ResultType.BadRequest:
+                    return Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message));
+            }
         }
 
         return Results.Ok();

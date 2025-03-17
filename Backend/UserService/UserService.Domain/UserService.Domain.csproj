@@ -10,4 +10,8 @@
       <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="9.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\BaseLibrary\BaseLibrary.csproj" />
+    </ItemGroup>
+
 </Project>

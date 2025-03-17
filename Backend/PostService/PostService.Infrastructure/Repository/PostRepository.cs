@@ -31,14 +31,14 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
             return Result<Post>.Success(entity);
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
             await _context.Database.RollbackTransactionAsync(cancellationToken);
             throw;
         }
     }
 
-    public async Task<IEnumerable<Post>> Get(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Post>?> Get(CancellationToken cancellationToken)
     {
         return await _context.Posts
             .Include(x => x.PostCategories)
@@ -61,7 +61,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
         return Result<Post>.Success(post);
     }
 
-    public async Task<Result<Post?>> UpdateById(Guid id, Post updateData, CancellationToken cancellationToken)
+    public async Task<Result<Post>> UpdateById(Guid id, Post updateData, CancellationToken cancellationToken)
     {
         var post = await _context.Posts
             .Include(x=> x.PostCategories)
@@ -69,7 +69,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
         if (post is null)
         {
-            return Result<Post>.Failed($"{nameof(Post)} c Id: {id} не найден", ResultType.NotFound);
+            return Result<Post>.Failed($"{nameof(Post)} c Id: {id} не найден", ResultType.NotFound)!;
         }
 
         try
@@ -90,7 +90,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
             await _context.SaveChangesAsync(cancellationToken);
             await _context.Database.CommitTransactionAsync(cancellationToken);
 
-            return Result<Post>.Success(post)!;
+            return Result<Post>.Success(post);
         }
         catch (Exception exception)
         {
@@ -99,7 +99,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
         }
     }
 
-    public async Task<Result<Post?>> DeleteById(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<Post>> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var post = await _context.Posts
             .Include(x=> x.PostCategories)
@@ -107,7 +107,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
         if (post is null)
         {
-            return Result<Post>.Failed($"{nameof(Post)} с Id: {id} не найден", ResultType.NotFound);
+            return Result<Post>.Failed($"{nameof(Post)} с Id: {id} не найден", ResultType.NotFound)!;
         }
 
         try
@@ -120,7 +120,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
             await _context.SaveChangesAsync(cancellationToken);
             await _context.Database.CommitTransactionAsync(cancellationToken);
 
-            return Result<Post>.Success(post)!;
+            return Result<Post>.Success(post);
         }
         catch (Exception exception)
         {
