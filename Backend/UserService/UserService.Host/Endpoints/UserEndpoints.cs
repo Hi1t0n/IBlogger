@@ -1,9 +1,7 @@
 ﻿using System.Net;
 using BaseLibrary.Classes.Result;
-using UserService.Domain;
 using UserService.Domain.Contacts;
 using UserService.Domain.Interfaces;
-using UserService.Domain.Models;
 using UserService.Infrastructure.Extensions;
 using UserService.Infrastructure.Services;
 

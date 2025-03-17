@@ -1,4 +1,4 @@
-﻿using BaseLibrary.Classes;
+﻿using BaseLibrary.Classes.Result;
 
 namespace BaseLibrary.Interfaces;
 

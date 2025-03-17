@@ -1,8 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using PostService.Domain.Models;
-using PostService.Infrastructure.Configurations;
 
 namespace PostService.Infrastructure.Context;
 

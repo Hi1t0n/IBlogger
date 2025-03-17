@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using UserService.Domain;
 using UserService.Domain.Contacts;
 using UserService.Domain.Interfaces;
-using UserService.Domain.Models;
 
 namespace UserService.Infrastructure.Services;
 
@@ -105,7 +104,7 @@ public static class ValidateDataService
             var mailAddress = new MailAddress(email);
             return true;
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
             return false;
         }

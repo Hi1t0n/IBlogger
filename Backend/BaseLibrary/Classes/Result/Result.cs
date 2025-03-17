@@ -1,7 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using BaseLibrary.Classes.Result;
-
-namespace BaseLibrary.Classes;
+﻿namespace BaseLibrary.Classes.Result;
 
 /// <summary>
 /// Результат.
@@ -19,7 +16,7 @@ public class Result<T>
         Value = value;
         IsSuccess = isSuccess;
         Message = message;
-        ResultType = ResultType;
+        ResultType = resultType;
     }
 
     public static Result<T?> Failed(string message, ResultType resultType)

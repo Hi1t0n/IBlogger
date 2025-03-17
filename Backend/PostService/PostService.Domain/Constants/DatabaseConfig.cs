@@ -1,6 +1,6 @@
 ﻿namespace PostService.Domain.Constants;
 
-public class DatabaseConfig
+public static class DatabaseConfig
 {
-    public static int RetryOnFailure = 10;
+    public static readonly int RetryOnFailure = 10;
 }

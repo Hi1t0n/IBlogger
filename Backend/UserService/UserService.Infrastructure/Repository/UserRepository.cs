@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using BaseLibrary.Classes;
+﻿using System.Text.Json;
 using BaseLibrary.Classes.Result;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -61,19 +58,16 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     public async Task<IEnumerable<User>?> Get(CancellationToken cancellationToken)
     {
         var key = $"users";
-
-        var users = new List<User>();
         
         var cache = await _distributedCache.GetStringAsync(key, cancellationToken);
         
-        
         if (!string.IsNullOrEmpty(cache))
         {
-            users = JsonSerializer.Deserialize<List<User>>(cache, Constants.JsonSerializerOptions);
-            return users;
+            var cachedUsers = JsonSerializer.Deserialize<List<User>>(cache, Constants.JsonSerializerOptions);
+            return cachedUsers;
         }
         
-        users = await _context.Users
+        var users = await _context.Users
             .Include(x=> x.Role)
             .Where(x=> !x.IsDelete)
             .AsNoTracking()
