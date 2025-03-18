@@ -1,8 +1,19 @@
-﻿namespace UserService.Domain.Models;
+﻿using BaseLibrary.Classes;
 
-public class Role
+namespace UserService.Domain.Models;
+
+/// <summary>
+/// Роль.
+/// </summary>
+public class Role : BaseModel
 {
-    public Guid RoleId { get; set; } = Guid.Empty;
+    /// <summary>
+    /// Название роли.
+    /// </summary>
     public string? RoleName { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Связывающее свойство с <see cref="Users"/>.
+    /// </summary>
     public ICollection<User> Users { get; set; } = new List<User>();
 }

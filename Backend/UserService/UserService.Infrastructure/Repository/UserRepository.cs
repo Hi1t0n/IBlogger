@@ -41,7 +41,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
         var user = await _context.Users
             .Include(x=> x.Role)
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.UserId == id && !x.IsDelete, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete, cancellationToken);
             
         if (user is null)
         {
@@ -82,7 +82,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     ///<inheritdoc/>
     public async Task<Result<User>> UpdateById(Guid id, User user, CancellationToken cancellationToken)
     {
-        var updatingEntity = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
+        var updatingEntity = await _context.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (updatingEntity is null)
         {
@@ -92,6 +92,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
         updatingEntity.UserName = user.UserName;
         updatingEntity.Email = user.Email;
         updatingEntity.PhoneNumber = user.PhoneNumber;
+        updatingEntity.ModifiedOn = DateTime.UtcNow;
 
         var result = _context.Users.Update(updatingEntity);
         await _context.SaveChangesAsync(cancellationToken);
@@ -103,7 +104,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     public async Task<Result<User>> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var deletingUser =
-            await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && !x.IsDelete, cancellationToken);
+            await _context.Users.FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete, cancellationToken);
 
         if (deletingUser is null)
         {
@@ -123,7 +124,7 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     public async Task<User?> RestoreUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var restoringUser =
-            await _context.Users.FirstOrDefaultAsync(x => x.UserId == id && x.IsDelete == true, cancellationToken);
+            await _context.Users.FirstOrDefaultAsync(x => x.Id == id && x.IsDelete == true, cancellationToken);
 
         if (restoringUser is null)
         {

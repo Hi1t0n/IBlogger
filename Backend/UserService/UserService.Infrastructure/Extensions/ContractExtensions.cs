@@ -8,27 +8,25 @@ public static class ContractExtensions
 {
     public static User ToModel(this AddUserRequestContract contract)
     {
-        var user = new User()
+        return new User()
         {
-            UserId = Guid.NewGuid(),
+            Id = Guid.NewGuid(),
             UserName = contract.UserName.ToLower(),
             Password = CryptoService.HashPassword(contract.Password),
             Email = contract.Email!.ToLower(),
-            PhoneNumber = contract.PhoneNumber
+            PhoneNumber = contract.PhoneNumber,
+            CreatedOn = DateTime.UtcNow,
+            ModifiedOn = DateTime.UtcNow
         };
-
-        return user;
     }
 
     public static User ToModel(this UpdateUserRequestContract contract)
     {
-        var user = new User()
+        return new User()
         {
             UserName = contract.UserName.ToLower(),
             Email = contract.Email.ToLower(),
             PhoneNumber = contract.PhoneNumber
         };
-
-        return user;
     }
 }

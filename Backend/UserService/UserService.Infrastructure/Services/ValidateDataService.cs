@@ -7,9 +7,17 @@ using UserService.Domain.Interfaces;
 
 namespace UserService.Infrastructure.Services;
 
+/// <summary>
+/// Сервис валидации данных.
+/// </summary>
 public static class ValidateDataService
 {
-    
+    /// <summary>
+    /// Валидация данных для <see cref="AddUserRequestContract"/>.
+    /// </summary>
+    /// <param name="contract">Данные для валидации.</param>
+    /// <param name="userRepository"><see cref="IUserRepository"/>.</param>
+    /// <returns>Результат валидации.</returns>
     public static async Task<ValidateResult> ValidateData(this AddUserRequestContract contract, IUserRepository userRepository)
     {
         if(string.IsNullOrWhiteSpace(contract.UserName))
@@ -51,6 +59,12 @@ public static class ValidateDataService
         return ValidateResult.Valid();
     }
     
+    /// <summary>
+    /// Валидация данных для <see cref="UpdateUserRequestContract"/>.
+    /// </summary>
+    /// <param name="contract">Данные для валидации.</param>
+    /// <param name="userRepository"><see cref="IUserRepository"/>.</param>
+    /// <returns>Результат валидации.</returns>
     public static async Task<ValidateResult> ValidateData(this UpdateUserRequestContract contract, IUserRepository userRepository)
     {
         if(string.IsNullOrWhiteSpace(contract.UserName))
@@ -110,6 +124,11 @@ public static class ValidateDataService
         }
     }
 
+    /// <summary>
+    /// Валидация номера телефона.
+    /// </summary>
+    /// <param name="phoneNumber">Номер телефона.</param>
+    /// <returns>True - если телефон соответствует формату, иначе false.</returns>
     private static bool IsValidPhoneNumber(string? phoneNumber)
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))

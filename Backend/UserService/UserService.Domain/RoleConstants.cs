@@ -1,6 +1,9 @@
 ﻿namespace UserService.Domain;
 
-public static class Roles
+/// <summary>
+/// Константы ролей.
+/// </summary>
+public static class RoleConstants
 {
     /// <summary>
     /// Id роли пользователя.

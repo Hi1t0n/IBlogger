@@ -3,8 +3,15 @@ using Serilog;
 
 namespace UserService.Host.Middlewares;
 
+/// <summary>
+/// Глобальный обработчик исключений.
+/// </summary>
+/// <param name="next"></param>
 public class ExceptionMiddleware(RequestDelegate next)
 {
+    /// <summary>
+    /// <see cref="RequestDelegate"/>.
+    /// </summary>
     private readonly RequestDelegate _next = next;
 
     public async Task InvokeAsync(HttpContext context)

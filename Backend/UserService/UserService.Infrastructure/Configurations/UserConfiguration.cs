@@ -16,14 +16,14 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     /// <param name="builder"><see cref="EntityTypeBuilder"/>.</param>
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(x => x.UserId);
-        builder.Property(x => x.UserId).IsRequired();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
         builder.Property(x => x.UserName).IsRequired();
         builder.Property(x => x.Password).IsRequired();
         builder.HasIndex(x => x.UserName).IsUnique();
         builder.HasIndex(x => x.Email).IsUnique();
         builder.HasIndex(x => x.PhoneNumber).IsUnique();
-        builder.Property(x => x.RoleId).HasDefaultValue(Roles.User);
+        builder.Property(x => x.RoleId).HasDefaultValue(RoleConstants.User);
 
         builder.HasOne(x => x.Role).WithMany(x => x.Users).HasForeignKey(x => x.RoleId);
     }

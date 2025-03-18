@@ -16,13 +16,13 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
     /// <param name="builder"><see cref="EntityTypeBuilder"/>.</param>
     public void Configure(EntityTypeBuilder<Role> builder)
     {
-        builder.HasKey(x => x.RoleId);
-        builder.Property(x => x.RoleId).IsRequired();
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).IsRequired();
         builder.Property(x => x.RoleName).IsRequired();
 
         builder.HasData(
-            new Role { RoleId = Roles.User, RoleName = "User" },
-            new Role { RoleId = Roles.Admin, RoleName = "Admin" }
+            new Role { Id = RoleConstants.User, RoleName = "User" },
+            new Role { Id = RoleConstants.Admin, RoleName = "Admin" }
         );
     }
 }

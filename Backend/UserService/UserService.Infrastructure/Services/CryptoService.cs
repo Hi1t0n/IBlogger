@@ -1,5 +1,8 @@
 ﻿namespace UserService.Infrastructure.Services;
 
+/// <summary>
+/// Криптографический сервис.
+/// </summary>
 public static class CryptoService
 {
     /// <summary>

@@ -1,9 +1,11 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
-
 namespace UserService.Domain;
 
+/// <summary>
+/// Константы.
+/// </summary>
 public static class Constants
 {
     /// <summary>

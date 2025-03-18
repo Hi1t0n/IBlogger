@@ -4,8 +4,15 @@ using UserService.Infrastructure.Configurations;
 
 namespace UserService.Infrastructure.Context;
 
+/// <summary>
+/// Контекст базы данных.
+/// </summary>
 public class ApplicationDbContext : DbContext
 {
+    /// <summary>
+    /// Создает контекст базы данных.
+    /// </summary>
+    /// <param name="options">Настройки контекста.</param>
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
         
@@ -16,6 +23,10 @@ public class ApplicationDbContext : DbContext
 
     }
 
+    /// <summary>
+    /// Конфигурация моделей(таблиц) в базе данных.
+    /// </summary>
+    /// <param name="modelBuilder"><see cref="ModelBuilder"/>.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
@@ -23,4 +34,5 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<User> Users => Set<User>();
+    public DbSet<Role> Roles => Set<Role>();
 }
