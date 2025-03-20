@@ -1,4 +1,5 @@
 using PostService.Domain.Constants;
+using PostService.Host.Extensions;
 using PostService.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,5 +27,7 @@ if (builder.Environment.IsDevelopment())
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.ApplyMigrations();
 
 app.Run();

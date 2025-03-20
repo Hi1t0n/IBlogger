@@ -16,6 +16,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
     /// <param name="builder"><see cref="EntityTypeBuilder"/>.</param>
     public void Configure(EntityTypeBuilder<Role> builder)
     {
+        builder.ToTable("Role");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).IsRequired();
         builder.Property(x => x.RoleName).IsRequired();

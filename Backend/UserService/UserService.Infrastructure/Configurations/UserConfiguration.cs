@@ -16,6 +16,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     /// <param name="builder"><see cref="EntityTypeBuilder"/>.</param>
     public void Configure(EntityTypeBuilder<User> builder)
     {
+        builder.ToTable("User");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).IsRequired();
         builder.Property(x => x.UserName).IsRequired();

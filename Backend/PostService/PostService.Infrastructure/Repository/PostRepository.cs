@@ -78,7 +78,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
             post.Content = updateData.Content;
             post.Name = updateData.Name;
-            post.ModifiedAt = DateTime.Now;
+            post.ModifiedOn = DateTime.Now;
 
             if (updateData.PostCategories.Any())
             {
