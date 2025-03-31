@@ -1,3 +1,4 @@
+    using BaseLibrary.Classes.Extensions;
     using Serilog;
     using UserService.Domain;
     using UserService.Host.Endpoints;
@@ -9,11 +10,11 @@
 
     builder.Host.UseSerilog();
 
-    string connectionStringPostgreSql = builder.Environment.IsDevelopment()
+    var connectionStringPostgreSql = builder.Environment.IsDevelopment()
         ? builder.Configuration.GetConnectionString(Constants.ConnectionStringDbConfiguration)!
         : Environment.GetEnvironmentVariable(Constants.ConnectionStringDbEnvironment)!;
 
-    string connectionStringRedis = builder.Environment.IsDevelopment()
+    var connectionStringRedis = builder.Environment.IsDevelopment()
         ? builder.Configuration.GetConnectionString(Constants.ConnectionStringRedisConfiguration)!
         : Environment.GetEnvironmentVariable(Constants.ConnectionStringRedisEnvironment)!;
 

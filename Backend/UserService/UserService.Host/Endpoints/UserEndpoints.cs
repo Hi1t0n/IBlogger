@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using BaseLibrary.Classes.Contracts;
 using BaseLibrary.Classes.Result;
 using UserService.Domain.Contacts;
 using UserService.Domain.Interfaces;
@@ -26,8 +27,8 @@ public static class UserEndpoints
         mapGroup.MapGet(pattern: "/{userId:guid}", handler: GetUserByIdAsync);
         mapGroup.MapGet(pattern: "/", handler: GetUsersAsync);
         mapGroup.MapPut(pattern: "/{userId:guid}", handler: UpdateUserByIdAsync);
-        mapGroup.MapDelete(pattern: "/{userId:guid}", handler: DeleteUserByIdAsync);
         mapGroup.MapPut(pattern: "/restore/{userId:guid}", handler: RestoreUserByIdAsync);
+        mapGroup.MapDelete(pattern: "/{userId:guid}", handler: DeleteUserByIdAsync);
 
         return webApplication;
     }

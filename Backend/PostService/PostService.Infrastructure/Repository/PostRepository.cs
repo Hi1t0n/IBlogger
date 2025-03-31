@@ -7,48 +7,51 @@ using PostService.Infrastructure.Context;
 
 namespace PostService.Infrastructure.Repository;
 
+
+/// <inheritdoc cref="IPostRepository"/>. 
 public class PostRepository(ApplicationDbContext context) : IPostRepository
 {
-    private readonly ApplicationDbContext _context = context;
-
+    /// <inheritdoc/>.
     public async Task<Result<Post>> Create(Post entity, CancellationToken cancellationToken)
     {
+        if (!entity.PostCategories.Any())
+        {
+            Result<Post>.Failed($"{nameof(entity.PostCategories)} не может быть пустым.", ResultType.BadRequest);
+        }
+        
         try
         {
-            await _context.Database.BeginTransactionAsync(cancellationToken);
+            await context.Database.BeginTransactionAsync(cancellationToken);
 
-            await _context.Posts.AddAsync(entity, cancellationToken);
+            await context.Posts.AddAsync(entity, cancellationToken);
 
-            if (!entity.PostCategories.Any())
-            {
-                Result<Post>.Failed($"{nameof(entity.PostCategories)} не может быть пустым.", ResultType.BadRequest);
-            }
+            await context.AddRangeAsync(entity.PostCategories, cancellationToken);
 
-            await _context.AddRangeAsync(entity.PostCategories, cancellationToken);
-
-            await _context.SaveChangesAsync(cancellationToken);
-            await _context.Database.CommitTransactionAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+            await context.Database.CommitTransactionAsync(cancellationToken);
 
             return Result<Post>.Success(entity);
         }
         catch (Exception exception)
         {
-            await _context.Database.RollbackTransactionAsync(cancellationToken);
+            await context.Database.RollbackTransactionAsync(cancellationToken);
             throw;
         }
     }
 
+    /// <inheritdoc/>.
     public async Task<IEnumerable<Post>?> Get(CancellationToken cancellationToken)
     {
-        return await _context.Posts
+        return await context.Posts
             .Include(x => x.PostCategories)
             .ThenInclude(x => x.Category)
             .ToListAsync(cancellationToken);
     }
 
+    /// <inheritdoc/>.
     public async Task<Result<Post>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var post = await _context.Posts
+        var post = await context.Posts
             .Include(x => x.PostCategories)
             .ThenInclude(x => x.Category)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -60,10 +63,11 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
         return Result<Post>.Success(post);
     }
-
+    
+    /// <inheritdoc/>.
     public async Task<Result<Post>> UpdateById(Guid id, Post updateData, CancellationToken cancellationToken)
     {
-        var post = await _context.Posts
+        var post = await context.Posts
             .Include(x=> x.PostCategories)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
@@ -74,34 +78,35 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
         try
         {
-            await _context.Database.BeginTransactionAsync(cancellationToken);
+            await context.Database.BeginTransactionAsync(cancellationToken);
 
             post.Content = updateData.Content;
-            post.Name = updateData.Name;
+            post.Title = updateData.Title;
             post.ModifiedOn = DateTime.Now;
 
             if (updateData.PostCategories.Any())
             {
-                _context.PostCategories.RemoveRange(post.PostCategories);
+                context.PostCategories.RemoveRange(post.PostCategories);
             }
             
-            await _context.PostCategories.AddRangeAsync(updateData.PostCategories, cancellationToken);
+            await context.PostCategories.AddRangeAsync(updateData.PostCategories, cancellationToken);
 
-            await _context.SaveChangesAsync(cancellationToken);
-            await _context.Database.CommitTransactionAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+            await context.Database.CommitTransactionAsync(cancellationToken);
 
             return Result<Post>.Success(post);
         }
         catch (Exception exception)
         {
-            await _context.Database.RollbackTransactionAsync(cancellationToken);
+            await context.Database.RollbackTransactionAsync(cancellationToken);
             throw;
         }
     }
 
+    /// <inheritdoc/>.
     public async Task<Result<Post>> DeleteById(Guid id, CancellationToken cancellationToken)
     {
-        var post = await _context.Posts
+        var post = await context.Posts
             .Include(x=> x.PostCategories)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
@@ -112,19 +117,19 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
         try
         {
-            await _context.Database.BeginTransactionAsync(cancellationToken);
+            await context.Database.BeginTransactionAsync(cancellationToken);
             
-            _context.PostCategories.RemoveRange(post.PostCategories);
-            _context.Posts.Remove(post);
+            context.PostCategories.RemoveRange(post.PostCategories);
+            context.Posts.Remove(post);
 
-            await _context.SaveChangesAsync(cancellationToken);
-            await _context.Database.CommitTransactionAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+            await context.Database.CommitTransactionAsync(cancellationToken);
 
             return Result<Post>.Success(post);
         }
         catch (Exception exception)
         {
-            await _context.Database.RollbackTransactionAsync(cancellationToken);
+            await context.Database.RollbackTransactionAsync(cancellationToken);
             throw;
         }
     }

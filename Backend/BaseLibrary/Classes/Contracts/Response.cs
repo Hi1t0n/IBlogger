@@ -1,4 +1,4 @@
-﻿namespace UserService.Domain.Contacts;
+﻿namespace BaseLibrary.Classes.Contracts;
 
 /// <summary>
 /// Контракт ответа.

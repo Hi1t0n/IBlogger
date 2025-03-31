@@ -28,5 +28,5 @@ WORKDIR /app
 
 COPY --from=build /app .
 
-EXPOSE 5230
+EXPOSE 5160
 ENTRYPOINT dotnet PostService.Host.dll

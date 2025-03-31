@@ -1,20 +1,24 @@
+using BaseLibrary.Classes.Extensions;
 using PostService.Domain.Constants;
+using PostService.Host.Endpoints;
 using PostService.Host.Extensions;
 using PostService.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionStringDb = builder.Environment.IsDevelopment()
-    ? builder.Configuration.GetConnectionString(ConnectionStrings.Postgre)!
-    : Environment.GetEnvironmentVariable(ConnectionStrings.Postgre)!;
+builder.Host.UseSerilog();
+
+var connectionStringDataBase = builder.Environment.IsDevelopment()
+    ? builder.Configuration.GetConnectionString(DatabaseConfig.DataBaseConnectionStringConfigurationName)!
+    : Environment.GetEnvironmentVariable(DatabaseConfig.DataBaseConnectionStringConfigurationName)!;
 
 var connectionStringRedis = builder.Environment.IsDevelopment()
-    ? builder.Configuration.GetConnectionString(ConnectionStrings.Redis)!
-    : Environment.GetEnvironmentVariable(ConnectionStrings.Redis)!;
+    ? builder.Configuration.GetConnectionString(RedisConfig.RedisConnectionStringConfigurationName)!
+    : Environment.GetEnvironmentVariable(RedisConfig.RedisConnectionStringConfigurationName)!;
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddBusinessLogic(connectionStringDb);
+builder.Services.AddBusinessLogic(connectionStringDataBase, connectionStringRedis);
 
 var app = builder.Build();
 
@@ -29,5 +33,6 @@ if (builder.Environment.IsDevelopment())
 }
 
 app.ApplyMigrations();
+app.AddPostEndpoints();
 
 app.Run();

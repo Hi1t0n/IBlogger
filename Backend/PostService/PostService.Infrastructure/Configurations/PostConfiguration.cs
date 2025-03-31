@@ -11,7 +11,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.ToTable("Post");
         builder.HasIndex(x => x.Id).IsUnique();
         builder.Property(x => x.Id).IsRequired();
-        builder.Property(x => x.Name).IsRequired();
+        builder.Property(x => x.Title).IsRequired();
         builder.Property(x => x.Content).IsRequired();
         builder.Property(x => x.CreatedOn).IsRequired();
     }
