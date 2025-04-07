@@ -117,8 +117,7 @@ public static class UserEndpoints
     /// <param name="repository"><see cref="IUserRepository"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Результат обновления с данными.</returns>
-    private static async Task<IResult> UpdateUserByIdAsync(Guid userId,
-        UpdateUserRequestContract contract,
+    private static async Task<IResult> UpdateUserByIdAsync(UpdateUserRequestContract contract,
         IUserRepository repository,
         CancellationToken cancellationToken)
     {
@@ -138,7 +137,7 @@ public static class UserEndpoints
         }
 
         var user = contract.ToModel();
-        var result = await repository.UpdateById(userId, user, cancellationToken);
+        var result = await repository.UpdateById(user, cancellationToken);
 
         if (!result.IsSuccess)
         {

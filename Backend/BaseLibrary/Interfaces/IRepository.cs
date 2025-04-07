@@ -14,7 +14,7 @@ public interface IRepository<T>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <typeparam name="T">Тип сущности.</typeparam>
     /// <returns>Созданная сущность.</returns>
-    public Task<Result<T>> Create(T entity, CancellationToken cancellationToken);
+    public Task<Result<T>> Add(T entity, CancellationToken cancellationToken);
     
     /// <summary>
     /// Получение всех сущностей.
@@ -36,12 +36,11 @@ public interface IRepository<T>
     /// <summary>
     /// Обновление сущности по Id.
     /// </summary>
-    /// <param name="id">Идентификатор сущности.</param>
     /// <param name="updateData">Данные для обновления.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <typeparam name="T">Тип данных сущности, которую обновляем.</typeparam>
     /// <returns>Сущность с обновленными данными.</returns>
-    public Task<Result<T>> UpdateById(Guid id, T updateData, CancellationToken cancellationToken);
+    public Task<Result<T>> UpdateById(T updateData, CancellationToken cancellationToken);
 
     /// <summary>
     /// Удаление сущности по Id.

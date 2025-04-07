@@ -12,15 +12,15 @@ public static class WebApplicationExtensions
     /// Применение миграция БД.
     /// </summary>
     /// <param name="webApplication"><see cref="WebApplication"/></param>
-    public static async void ApplyMigrations(this WebApplication webApplication)
+    public static void ApplyMigrations(this WebApplication webApplication)
     {
         using var scope = webApplication.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+        var pendingMigrations = context.Database.GetPendingMigrations();
 
         if (pendingMigrations.Any())
         {
-            await context.Database.MigrateAsync();
+            context.Database.Migrate();
             Console.WriteLine($"--> Migration apply");
         }
     }

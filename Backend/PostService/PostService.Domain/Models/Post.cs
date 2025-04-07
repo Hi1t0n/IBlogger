@@ -1,4 +1,5 @@
 ﻿using BaseLibrary.Classes;
+using PostService.Domain.Contracts;
 
 namespace PostService.Domain.Models;
 

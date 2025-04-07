@@ -80,13 +80,13 @@ public class UserRepository(ApplicationDbContext context, IDistributedCache dist
     }
 
     ///<inheritdoc/>
-    public async Task<Result<User>> UpdateById(Guid id, User user, CancellationToken cancellationToken)
+    public async Task<Result<User>> UpdateById(User user, CancellationToken cancellationToken)
     {
-        var updatingEntity = await _context.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var updatingEntity = await _context.Users.FirstOrDefaultAsync(x => x.Id == user.Id, cancellationToken);
 
         if (updatingEntity is null)
         {
-            return Result<User>.Failed($"{nameof(User)} c Id: {id} не найден", ResultType.NotFound)!;
+            return Result<User>.Failed($"{nameof(User)} c Id: {user.Id} не найден", ResultType.NotFound)!;
         }
 
         updatingEntity.UserName = user.UserName;

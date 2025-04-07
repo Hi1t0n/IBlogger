@@ -1,8 +1,10 @@
 ﻿using BaseLibrary.Classes.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal;
 using PostService.Domain.Constants;
 using PostService.Domain.Interfaces;
 using PostService.Infrastructure.Context;
+using PostService.Infrastructure.Mappings;
 using PostService.Infrastructure.Repository;
 
 namespace PostService.Infrastructure.Extensions;
@@ -40,7 +42,8 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddNpgsql<ApplicationDbContext>(connectionString, builder =>
         {
-            builder.EnableRetryOnFailure(DatabaseConfig.RetryOnFailure);
+            builder.EnableRetryOnFailure(DatabaseConfig.RetryOnFailure,
+                TimeSpan.FromSeconds(30), null);
         } );
 
         return serviceCollection;
@@ -71,6 +74,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddService(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IPostRepository, PostRepository>();
+        serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
         
         return serviceCollection;
     }

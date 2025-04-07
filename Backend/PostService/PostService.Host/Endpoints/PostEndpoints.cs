@@ -1,8 +1,12 @@
-﻿using BaseLibrary.Classes.Contracts;
+﻿using System.Net;
+using BaseLibrary.Classes.Contracts;
+using BaseLibrary.Classes.Result;
+using Microsoft.AspNetCore.Http.HttpResults;
 using PostService.Domain.Contracts;
-using PostService.Domain.Extensions;
+using PostService.Domain.Contracts.PostContracts;
 using PostService.Domain.Interfaces;
 using PostService.Domain.Models;
+using PostService.Infrastructure.Mappings;
 
 namespace PostService.Host.Endpoints;
 
@@ -19,25 +23,139 @@ public static class PostEndpoints
     public static WebApplication AddPostEndpoints(this WebApplication webApplication)
     {
         var mapGroup = webApplication.MapGroup("/api/posts/");
-        
+
         mapGroup.MapPost("/", AddPost);
-        
+        mapGroup.MapGet("/", GetPosts);
+        mapGroup.MapGet("/{id:Guid}", GetPostById);
+        mapGroup.MapGet("/users/{id:Guid}", GetPostsByUserId);
+        mapGroup.MapPut("/", UpdatePostById);
+        mapGroup.MapDelete("/", DeletePostById);
+
         return webApplication;
     }
 
     /// <summary>
     /// Добавление поста. 
     /// </summary>
-    /// <param name="contract">Данные поста.</param>
-    /// <param name="repository"><see cref="IPostRepository"/>.</param>
+    /// <param name="request">Данные поста.</param>
+    /// <param name="categoryRepository"><see cref="ICategoryRepository"/>.</param>
+    /// <param name="postRepository"><see cref="IPostRepository"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
-    private static async Task<IResult> AddPost(AddPostContract contract,
-        IPostRepository repository, CancellationToken cancellationToken)
+    /// <returns>Результат добавления и <see cref="Response{T}"/>.</returns>
+    private static async Task<IResult> AddPost(AddPostRequest request,
+        ICategoryRepository categoryRepository,
+        IPostRepository postRepository,
+        CancellationToken cancellationToken)
     {
-        var post = contract.ToModel();
+        var existingCategories = await categoryRepository.GetExistCategories(request.Categories);
+        var post = request.ToModel(existingCategories);
 
-        await repository.Create(post, cancellationToken);
+        await postRepository.Add(post, cancellationToken);
 
         return Results.Ok(new Response(StatusCodes.Status200OK, String.Empty));
+    }
+
+    /// <summary>
+    /// Получение всех постов.
+    /// </summary>
+    /// <param name="repository"><see cref="IPostRepository"/>.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
+    /// <returns>Коллекция постов.</returns>
+    private static async Task<IResult> GetPosts(IPostRepository repository, CancellationToken cancellationToken)
+    {
+        var posts = await repository.Get(cancellationToken);
+
+        return Results.Ok(
+            new Response<IEnumerable<PostResponse>>(StatusCodes.Status200OK, posts!.ToResponse()));
+    }
+
+    /// <summary>
+    /// Получение поста по <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">Идентификатор поста.</param>
+    /// <param name="repository"><see cref="IPostRepository"/>.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
+    /// <returns>Результат с <see cref="Response{T}"/>.</returns>
+    private static async Task<IResult> GetPostById(Guid id,
+        IPostRepository repository, CancellationToken cancellationToken)
+    {
+        var result = await repository.GetById(id, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            switch (result.ResultType)
+            {
+                case ResultType.NotFound:
+                    return Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message));
+            }
+        }
+
+        return Results.Ok(new Response<PostResponse>(StatusCodes.Status200OK, result.Value!.ToResponse()));
+    }
+
+    /// <summary>
+    /// Получение всех постов по <paramref name="id"/> пользователя.
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя.</param>
+    /// <param name="repository"><see cref="IPostRepository"/>.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
+    /// <returns>Результат с <see cref="Response{T}"/>.</returns>
+    private static async Task<IResult> GetPostsByUserId(Guid id, IPostRepository repository,
+        CancellationToken cancellationToken)
+    {
+        var posts = await repository.GetPostsByUserId(id, cancellationToken);
+
+        return Results.Ok(
+            new Response<IEnumerable<PostResponse>>(StatusCodes.Status200OK, posts.ToResponse()));
+    }
+
+    /// <summary>
+    /// Обновление поста.
+    /// </summary>
+    /// <param name="request">Данные для обновления поста.</param>
+    /// <param name="postRepository"><see cref="IPostRepository"/>.</param>
+    /// <param name="categoryRepository"><see cref="ICategoryRepository"/>.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
+    /// <returns>Результат с <see cref="Response{T}"/>.</returns>
+    private static async Task<IResult> UpdatePostById(PostUpdateRequest request,
+        IPostRepository postRepository, ICategoryRepository categoryRepository, CancellationToken cancellationToken)
+    {
+        var existCategories = await categoryRepository.GetExistCategories(request.Categories);
+        var result = await postRepository.UpdateById(request.ToModel(existCategories), cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            switch (result.ResultType)
+            {
+                case ResultType.NotFound:
+                    return Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message));
+            }
+        }
+
+        return Results.Ok(new Response(StatusCodes.Status200OK, string.Empty));
+    }
+
+    /// <summary>
+    /// Удаление поста по <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">Идентификатор поста.</param>
+    /// <param name="repository"><see cref="IPostRepository"/>.</param>
+    /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
+    /// <returns>Результат с <see cref="Response{T}"/>.</returns>
+    private static async Task<IResult> DeletePostById(Guid id,
+        IPostRepository repository, CancellationToken cancellationToken)
+    {
+        var result = await repository.DeleteById(id, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            switch (result.ResultType)
+            {
+                case ResultType.NotFound:
+                    return Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message));
+            }
+        }
+
+        return Results.Ok(new Response(StatusCodes.Status200OK, string.Empty));
     }
 }
