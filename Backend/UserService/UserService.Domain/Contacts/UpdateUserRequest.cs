@@ -6,4 +6,4 @@
 /// <param name="UserName">Имя пользователя.</param>
 /// <param name="Email">Эл. Почта.</param>
 /// <param name="PhoneNumber">Номер телефона.</param>
-public record UpdateUserRequestContract(Guid Id, string UserName, string Email, string PhoneNumber);
+public record UpdateUserRequest(Guid Id, string UserName, string Email, string PhoneNumber);

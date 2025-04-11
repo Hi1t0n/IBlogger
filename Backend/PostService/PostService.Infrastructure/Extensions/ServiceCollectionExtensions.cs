@@ -1,10 +1,8 @@
 ﻿using BaseLibrary.Classes.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal;
 using PostService.Domain.Constants;
 using PostService.Domain.Interfaces;
 using PostService.Infrastructure.Context;
-using PostService.Infrastructure.Mappings;
 using PostService.Infrastructure.Repository;
 
 namespace PostService.Infrastructure.Extensions;
@@ -75,6 +73,7 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddScoped<IPostRepository, PostRepository>();
         serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
+        serviceCollection.AddScoped<IPostService, Services.PostService>();
         
         return serviceCollection;
     }

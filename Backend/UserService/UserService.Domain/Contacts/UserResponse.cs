@@ -12,7 +12,7 @@
 /// <param name="PhoneNumberConfirmed">Статус подтверждения номера телефона.</param>
 /// <param name="CreatedOn">Дата создания.</param>
 /// <param name="ModifiedOn">Дата изменения.</param>
-public record UserResponseContract(
+public record UserResponse(
     Guid Id, 
     string UserName,
     string RoleName,

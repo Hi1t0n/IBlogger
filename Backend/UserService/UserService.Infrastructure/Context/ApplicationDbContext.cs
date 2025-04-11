@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using UserService.Domain.Models;
 using UserService.Infrastructure.Configurations;
 
@@ -29,8 +30,7 @@ public class ApplicationDbContext : DbContext
     /// <param name="modelBuilder"><see cref="ModelBuilder"/>.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new RoleConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
     public DbSet<User> Users => Set<User>();

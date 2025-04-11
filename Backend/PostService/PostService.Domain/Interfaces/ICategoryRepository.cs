@@ -13,5 +13,5 @@ public interface ICategoryRepository : IRepository<Category>
     /// </summary>
     /// <param name="categories">Список всех категорий, которые переданы с клиента.</param>
     /// <returns>Список всех существующих категорий.</returns>
-    public Task<List<Category>> GetExistCategories(List<Guid> categories);
+    public Task<List<Category>?> GetExistCategories(List<Guid> categories);
 }

@@ -6,7 +6,7 @@ namespace UserService.Infrastructure.Extensions;
 
 public static class ContractExtensions
 {
-    public static User ToModel(this AddUserRequestContract contract)
+    public static User ToModel(this AddUserRequest contract)
     {
         return new User()
         {
@@ -20,7 +20,7 @@ public static class ContractExtensions
         };
     }
 
-    public static User ToModel(this UpdateUserRequestContract contract)
+    public static User ToModel(this UpdateUserRequest contract)
     {
         return new User()
         {

@@ -1,12 +1,11 @@
 ﻿using BaseLibrary.Classes.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
-using Serilog.Events;
+using UserService.Domain;
 using UserService.Domain.Interfaces;
 using UserService.Infrastructure.Context;
 using UserService.Infrastructure.Repository;
-using Constants = UserService.Domain.Constants;
+using UserService.Infrastructure.Services;
 
 namespace UserService.Infrastructure.Extensions;
 
@@ -40,7 +39,7 @@ public static class ServiceCollectionExtensions
             options.UseNpgsql(connectionString, 
                 builder =>
                 {
-                    builder.EnableRetryOnFailure(Constants.RetryOnFailure);
+                    builder.EnableRetryOnFailure(DatabasesConfigurationConstants.RetryOnFailure);
                 }));
 
         return serviceCollection;
@@ -57,7 +56,7 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = connectionString;
-            options.InstanceName = Constants.InstanceNameRedis;
+            options.InstanceName = DatabasesConfigurationConstants.InstanceNameRedis;
         });
 
         return serviceCollection;
@@ -71,6 +70,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IUserRepository, UserRepository>();
+        serviceCollection.AddScoped<IUserService, Services.UserService>();
 
         return serviceCollection;
     }

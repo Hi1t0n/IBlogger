@@ -10,7 +10,7 @@ namespace PostService.Infrastructure.Repository;
 public class PostRepository(ApplicationDbContext context) : IPostRepository
 {
     /// <inheritdoc/>.
-    public async Task<Result<Post>> Add(Post entity, CancellationToken cancellationToken)
+    public async Task<Post?> Add(Post entity, CancellationToken cancellationToken)
     {
         if (!entity.PostCategories.Any())
         {
@@ -30,7 +30,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
                 await context.Database.CommitTransactionAsync(cancellationToken);
             });
             
-            return Result<Post>.Success(entity);
+            return entity;
         }
         catch (Exception exception)
         {
@@ -49,23 +49,18 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
     }
 
     /// <inheritdoc/>.
-    public async Task<Result<Post>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<Post?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var post = await context.Posts
             .Include(x => x.PostCategories)
             .ThenInclude(x => x.Category)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-        if (post is null)
-        {
-            return Result<Post>.Failed($"{nameof(Post)} с Id: {id} не найден.", ResultType.NotFound)!;
-        }
-
-        return Result<Post>.Success(post);
+        return post;
     }
 
     /// <inheritdoc/>.
-    public async Task<List<Post>> GetPostsByUserId(Guid userId, CancellationToken cancellationToken)
+    public async Task<List<Post>?> GetPostsByUserId(Guid userId, CancellationToken cancellationToken)
     {
         return await context.Posts
             .Include(x => x.PostCategories)
@@ -76,7 +71,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
     }
 
     /// <inheritdoc/>.
-    public async Task<Result<Post>> UpdateById(Post updateData, CancellationToken cancellationToken)
+    public async Task<Post?> UpdateById(Post updateData, CancellationToken cancellationToken)
     {
         var post = await context.Posts
             .Include(x => x.PostCategories)
@@ -84,7 +79,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
         if (post is null)
         {
-            return Result<Post>.Failed($"{nameof(Post)} c Id: {updateData.Id} не найден", ResultType.NotFound)!;
+            return null;
         }
 
         try
@@ -105,7 +100,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
             await context.SaveChangesAsync(cancellationToken);
             await context.Database.CommitTransactionAsync(cancellationToken);
 
-            return Result<Post>.Success(post);
+            return post;
         }
         catch (Exception exception)
         {
@@ -115,7 +110,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
     }
 
     /// <inheritdoc/>.
-    public async Task<Result<Post>> DeleteById(Guid id, CancellationToken cancellationToken)
+    public async Task<Post?> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var post = await context.Posts
             .Include(x => x.PostCategories)
@@ -123,7 +118,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
 
         if (post is null)
         {
-            return Result<Post>.Failed($"{nameof(Post)} с Id: {id} не найден", ResultType.NotFound)!;
+            return null;
         }
 
         try
@@ -141,7 +136,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
                 await context.Database.CommitTransactionAsync(cancellationToken);
             });
 
-            return Result<Post>.Success(post);
+            return post;
         }
         catch (Exception exception)
         {

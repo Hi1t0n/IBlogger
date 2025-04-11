@@ -13,11 +13,11 @@ namespace PostService.Infrastructure.Repository;
 public class CategoryRepository(ApplicationDbContext context) : ICategoryRepository
 {
     /// <inheritdoc />.
-    public async Task<Result<Category>> Add(Category entity, CancellationToken cancellationToken)
+    public async Task<Category?> Add(Category entity, CancellationToken cancellationToken)
     {
         await context.Categories.AddAsync(entity, cancellationToken);
 
-        return Result<Category>.Success(entity);
+        return entity;
     }
 
     /// <inheritdoc />.
@@ -27,20 +27,20 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
     }
 
     /// <inheritdoc />.
-    public async Task<Result<Category>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<Category?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (category is null)
         {
-            return Result<Category>.Failed($"{nameof(Category)} с Id: {id} не найден.", ResultType.NotFound)!;
+            return null;
         }
 
-        return Result<Category>.Success(category);
+        return category;
     }
 
     /// <inheritdoc />.
-    public async Task<List<Category>> GetExistCategories(List<Guid> categories)
+    public async Task<List<Category>?> GetExistCategories(List<Guid> categories)
     {
         return await context.Categories
             .Where(x => categories.Contains(x.Id))
@@ -48,25 +48,25 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
     }
 
     /// <inheritdoc />.
-    public async Task<Result<Category>> UpdateById(Category updateData, CancellationToken cancellationToken)
+    public async Task<Category?> UpdateById(Category updateData, CancellationToken cancellationToken)
     {
         var category = await context.Categories
             .FirstOrDefaultAsync(x => x.Id == updateData.Id, cancellationToken);
 
         if (category is null)
         {
-            return Result<Category>.Failed($"{nameof(Category)} c Id: {updateData.Id} не найден", ResultType.NotFound)!;
+            return null;
         }
 
         category.Name = updateData.Name;
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return Result<Category>.Success(category);
+        return category;
     }
 
     /// <inheritdoc />.
-    public async Task<Result<Category>> DeleteById(Guid id, CancellationToken cancellationToken)
+    public async Task<Category?> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var category = await context.Categories
             .Include(x => x.PostCategories)
@@ -74,7 +74,7 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
 
         if (category is null)
         {
-            return Result<Category>.Failed($"{nameof(Category)} с Id: {id} не найден", ResultType.NotFound)!;
+            return null;
         }
 
         var strategy = context.Database.CreateExecutionStrategy();
@@ -101,6 +101,6 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
             }
         });
 
-        return Result<Category>.Success(category);
+        return category;
     }
 }

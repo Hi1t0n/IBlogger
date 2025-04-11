@@ -11,12 +11,12 @@
     builder.Host.UseSerilog();
 
     var connectionStringPostgreSql = builder.Environment.IsDevelopment()
-        ? builder.Configuration.GetConnectionString(Constants.ConnectionStringDbConfiguration)!
-        : Environment.GetEnvironmentVariable(Constants.ConnectionStringDbEnvironment)!;
+        ? builder.Configuration.GetConnectionString(DatabasesConfigurationConstants.ConnectionStringDbConfiguration)!
+        : Environment.GetEnvironmentVariable(DatabasesConfigurationConstants.ConnectionStringDbEnvironment)!;
 
     var connectionStringRedis = builder.Environment.IsDevelopment()
-        ? builder.Configuration.GetConnectionString(Constants.ConnectionStringRedisConfiguration)!
-        : Environment.GetEnvironmentVariable(Constants.ConnectionStringRedisEnvironment)!;
+        ? builder.Configuration.GetConnectionString(DatabasesConfigurationConstants.ConnectionStringRedisConfiguration)!
+        : Environment.GetEnvironmentVariable(DatabasesConfigurationConstants.ConnectionStringRedisEnvironment)!;
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();

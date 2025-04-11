@@ -8,10 +8,10 @@ public class Result<T>
 {
     public T? Value { get; }
     public bool IsSuccess { get; init; }
-    public string Message { get; }
+    public string? Message { get; }
     public ResultType ResultType { get; init; }
     
-    private Result(T value, bool isSuccess, string message, ResultType resultType)
+    private Result(T? value, bool isSuccess, string? message, ResultType resultType)
     {
         Value = value;
         IsSuccess = isSuccess;
@@ -19,13 +19,13 @@ public class Result<T>
         ResultType = resultType;
     }
 
-    public static Result<T?> Failed(string message, ResultType resultType)
+    public static Result<T?> Failed(string? message, ResultType resultType)
     {
         return new Result<T?>(default, false, message, resultType);
     }
 
-    public static Result<T> Success(T value)
+    public static Result<T?> Success(T? value)
     {
-        return new Result<T>(value, true, string.Empty, ResultType.Ok);
+        return new Result<T?>(value, true, string.Empty, ResultType.Ok);
     }
 }

@@ -16,5 +16,5 @@ public interface IPostRepository : IRepository<Post>
     /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Список всех постов.</returns>
-    Task<List<Post>> GetPostsByUserId(Guid userId, CancellationToken cancellationToken);
+    Task<List<Post>?> GetPostsByUserId(Guid userId, CancellationToken cancellationToken);
 }

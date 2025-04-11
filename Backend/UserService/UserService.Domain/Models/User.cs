@@ -56,10 +56,10 @@ public class User : BaseModel
     /// <summary>
     /// Конвертация данных модели в ответ.
     /// </summary>
-    /// <returns><see cref="UserResponseContract"/>.</returns>
-    public UserResponseContract ToResponse()
+    /// <returns><see cref="UserResponse"/>.</returns>
+    public UserResponse ToResponse()
     {
-        return new UserResponseContract(Id, UserName!, Role!.RoleName!, Email, EmailConfirmed,
+        return new UserResponse(Id, UserName!, Role!.RoleName!, Email, EmailConfirmed,
             PhoneNumber, PhoneNumberConfirmed, CreatedOn, ModifiedOn);
     }
 }

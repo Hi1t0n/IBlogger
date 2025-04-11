@@ -4,7 +4,6 @@ using BaseLibrary.Classes.Result;
 using UserService.Domain.Contacts;
 using UserService.Domain.Interfaces;
 using UserService.Domain.Models;
-using UserService.Infrastructure.Extensions;
 using UserService.Infrastructure.Services;
 
 namespace UserService.Host.Endpoints;
@@ -37,10 +36,12 @@ public static class UserEndpoints
     /// Добавление пользователя.
     /// </summary>
     /// <param name="contract">Данные пользователя.</param>
+    /// <param name="userService"><see cref="IUserService"/>.</param>
     /// <param name="repository"><see cref="IUserRepository"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Результат добавления с данными.</returns>
-    private static async Task<IResult> AddUserAsync(AddUserRequestContract contract,
+    private static async Task<IResult> AddUserAsync(AddUserRequest contract,
+        IUserService userService,
         IUserRepository repository,
         CancellationToken cancellationToken)
     {
@@ -58,9 +59,8 @@ public static class UserEndpoints
                         (new Response((int)HttpStatusCode.Conflict, validateResult.Message));
             }
         }
-
-        var user = contract.ToModel();
-        await repository.Create(user, cancellationToken);
+        
+        await userService.Add(contract, cancellationToken);
 
         return Results.Ok();
     }
@@ -69,14 +69,14 @@ public static class UserEndpoints
     /// Получение пользователя по <paramref name="userId"/>.
     /// </summary>
     /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="repository"><see cref="IUserRepository"/>.</param>
+    /// <param name="userService"><see cref="IUserService"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Результат получения с данными.</returns>
     private static async Task<IResult> GetUserByIdAsync(Guid userId,
-        IUserRepository repository,
+        IUserService userService,
         CancellationToken cancellationToken)
     {
-        var result = await repository.GetById(userId, cancellationToken);
+        var result = await userService.GetById(userId, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -110,18 +110,19 @@ public static class UserEndpoints
     }
 
     /// <summary>
-    /// Обновление пользователя по <paramref name="userId"/>.
+    /// Обновление пользователя по Id.
     /// </summary>
-    /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="contract">Новые данные.</param>
-    /// <param name="repository"><see cref="IUserRepository"/>.</param>
+    /// <param name="request">Новые данные.</param>
+    /// <param name="userService"><see cref="IUserService"/>.</param>
+    /// <param name="repository"></param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Результат обновления с данными.</returns>
-    private static async Task<IResult> UpdateUserByIdAsync(UpdateUserRequestContract contract,
+    private static async Task<IResult> UpdateUserByIdAsync(UpdateUserRequest request,
+        IUserService userService,
         IUserRepository repository,
         CancellationToken cancellationToken)
     {
-        var validateResult = await contract.ValidateData(repository);
+        var validateResult = await request.ValidateData(repository);
 
         if (!validateResult.IsValid)
         {
@@ -136,8 +137,7 @@ public static class UserEndpoints
             }
         }
 
-        var user = contract.ToModel();
-        var result = await repository.UpdateById(user, cancellationToken);
+        var result = await userService.UpdateById(request, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -158,14 +158,14 @@ public static class UserEndpoints
     /// Удаление пользователя по <see cref="userId"/>.
     /// </summary>
     /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="repository"><see cref="IUserRepository"/>.</param>
+    /// <param name="userService"><see cref="IUserService"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Результат обновления с данными.</returns>
     private static async Task<IResult> DeleteUserByIdAsync(Guid userId,
-        IUserRepository repository,
+        IUserService userService,
         CancellationToken cancellationToken)
     {
-        var result = await repository.DeleteById(userId, cancellationToken);
+        var result = await userService.DeleteById(userId, cancellationToken);
 
         if (!result.IsSuccess)
         {

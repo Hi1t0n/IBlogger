@@ -13,12 +13,12 @@ namespace UserService.Infrastructure.Services;
 public static class ValidateDataService
 {
     /// <summary>
-    /// Валидация данных для <see cref="AddUserRequestContract"/>.
+    /// Валидация данных для <see cref="AddUserRequest"/>.
     /// </summary>
     /// <param name="contract">Данные для валидации.</param>
     /// <param name="userRepository"><see cref="IUserRepository"/>.</param>
     /// <returns>Результат валидации.</returns>
-    public static async Task<ValidateResult> ValidateData(this AddUserRequestContract contract, IUserRepository userRepository)
+    public static async Task<ValidateResult> ValidateData(this AddUserRequest contract, IUserRepository userRepository)
     {
         if(string.IsNullOrWhiteSpace(contract.UserName))
         {
@@ -60,12 +60,12 @@ public static class ValidateDataService
     }
     
     /// <summary>
-    /// Валидация данных для <see cref="UpdateUserRequestContract"/>.
+    /// Валидация данных для <see cref="UpdateUserRequest"/>.
     /// </summary>
     /// <param name="contract">Данные для валидации.</param>
     /// <param name="userRepository"><see cref="IUserRepository"/>.</param>
     /// <returns>Результат валидации.</returns>
-    public static async Task<ValidateResult> ValidateData(this UpdateUserRequestContract contract, IUserRepository userRepository)
+    public static async Task<ValidateResult> ValidateData(this UpdateUserRequest contract, IUserRepository userRepository)
     {
         if(string.IsNullOrWhiteSpace(contract.UserName))
         {
