@@ -16,4 +16,10 @@ public static class ResponseStringConstants
     /// {0} - nameof(EntityType).
     /// </summary>
     public static readonly string AddingErrorResponseStringTemplate = "При добавлении {0} что-то пошло не так";
+
+    /// <summary>
+    /// Атрибут не может быть пустым.
+    /// {0} - nameof(AttributeName). 
+    /// </summary>
+    public static readonly string RequiredAttributeResponseStringTemplate = "{0} является обязательным.";
 }
