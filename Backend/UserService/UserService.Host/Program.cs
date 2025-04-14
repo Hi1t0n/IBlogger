@@ -1,6 +1,8 @@
     using BaseLibrary.Classes.Extensions;
     using Serilog;
     using UserService.Domain;
+    using UserService.Domain.Constants;
+    using UserService.Domain.Models;
     using UserService.Host.Endpoints;
     using UserService.Host.Extensions;
     using UserService.Host.Middlewares;
@@ -41,5 +43,5 @@
     app.AddUserEndpoints();
 
     app.ApplyMigrations();
-
+    
     app.Run();

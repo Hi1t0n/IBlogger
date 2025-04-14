@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UserService.Domain;
+using UserService.Domain.Constants;
 using UserService.Domain.Interfaces;
 using UserService.Infrastructure.Context;
 using UserService.Infrastructure.Repository;
