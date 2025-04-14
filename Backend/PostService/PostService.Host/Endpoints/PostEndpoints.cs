@@ -42,7 +42,7 @@ public static class PostEndpoints
         IPostService postService,
         CancellationToken cancellationToken)
     {
-        await postService.Add(request, cancellationToken);
+        await postService.AddPost(request, cancellationToken);
 
         return Results.Ok(new Response(StatusCodes.Status200OK, String.Empty));
     }

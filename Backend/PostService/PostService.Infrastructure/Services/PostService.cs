@@ -7,18 +7,32 @@ using PostService.Infrastructure.Mappings;
 
 namespace PostService.Infrastructure.Services;
 
+/// <inheritdoc cref="IPostService"/>
 public class PostService : IPostService
 {
+    /// <summary>
+    /// <inheritdoc cref="IPostRepository"/>
+    /// </summary>
     private readonly IPostRepository _postRepository;
+    
+    /// <summary>
+    /// <inheritdoc cref="ICategoryRepository"/>
+    /// </summary>
     private readonly ICategoryRepository _categoryRepository;
 
+    /// <summary>
+    /// Конструктор.
+    /// </summary>
+    /// <param name="postRepository"><see cref="IPostRepository"/>.</param>
+    /// <param name="categoryRepository"><see cref="ICategoryRepository"/>.</param>
     public PostService(IPostRepository postRepository, ICategoryRepository categoryRepository)
     {
         _postRepository = postRepository;
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Result<Post?>> Add(AddPostRequest request, CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public async Task<Result<Post?>> AddPost(AddPostRequest request, CancellationToken cancellationToken)
     {
         var existCategories = await _categoryRepository.GetExistCategories(request.Categories);
 
@@ -33,14 +47,15 @@ public class PostService : IPostService
         return Result<Post>.Success(post);
     }
 
+    /// <inheritdoc/>
     public async Task<Result<IEnumerable<Post>?>> Get(CancellationToken cancellationToken)
     {
         var posts = await _postRepository.Get(cancellationToken);
 
         return Result<IEnumerable<Post>>.Success(posts);
-        ;
     }
 
+    /// <inheritdoc/>
     public async Task<Result<Post?>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var post = await _postRepository.GetById(id, cancellationToken);
@@ -51,6 +66,7 @@ public class PostService : IPostService
             : Result<Post>.Success(post);
     }
 
+    /// <inheritdoc/>
     public async Task<Result<List<Post>?>> GetPostsByUserId(Guid userId, CancellationToken cancellationToken)
     {
         var posts = await _postRepository.GetPostsByUserId(userId, cancellationToken);
@@ -58,6 +74,7 @@ public class PostService : IPostService
         return Result<List<Post>>.Success(posts);
     }
 
+    /// <inheritdoc/>
     public async Task<Result<Post?>> UpdateById(PostUpdateRequest request, CancellationToken cancellationToken)
     {
         var existingCategory = await _categoryRepository.GetExistCategories(request.Categories);
@@ -79,6 +96,7 @@ public class PostService : IPostService
         return Result<Post>.Success(updatedPost);
     }
 
+    /// <inheritdoc/>
     public async Task<Result<Post?>> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var post = await _postRepository.DeleteById(id, cancellationToken);

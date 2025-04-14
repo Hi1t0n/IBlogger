@@ -9,7 +9,7 @@ namespace PostService.Infrastructure.Repository;
 /// <summary>
 /// <inheritdoc cref="ICategoryRepository"/>.
 /// </summary>
-/// <param name="context"></param>
+/// <param name="context"><see cref="ApplicationDbContext"/>.</param>
 public class CategoryRepository(ApplicationDbContext context) : ICategoryRepository
 {
     /// <inheritdoc />.
