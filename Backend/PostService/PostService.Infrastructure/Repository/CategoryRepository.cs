@@ -1,5 +1,4 @@
-﻿using BaseLibrary.Classes.Result;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PostService.Domain.Interfaces;
 using PostService.Domain.Models;
 using PostService.Infrastructure.Context;
@@ -21,7 +20,7 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
     }
 
     /// <inheritdoc />.
-    public async Task<IEnumerable<Category>?> Get(CancellationToken cancellationToken)
+    public async Task<List<Category>?> Get(CancellationToken cancellationToken)
     {
         return await context.Categories.ToListAsync(cancellationToken);
     }

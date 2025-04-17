@@ -39,7 +39,7 @@ public class UserRepository : IUserRepository
     }
 
     ///<inheritdoc/>
-    public async Task<IEnumerable<User>?> Get(CancellationToken cancellationToken)
+    public async Task<List<User>?> Get(CancellationToken cancellationToken)
     {
         var users = await _context.Users
             .Include(x=> x.Role)

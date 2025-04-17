@@ -2,8 +2,6 @@
 using BaseLibrary.Classes.Result;
 using BaseLibrary.Constants;
 using Microsoft.Extensions.Caching.Distributed;
-using UserService.Domain;
-using UserService.Domain.Constants;
 using UserService.Domain.Contacts;
 using UserService.Domain.Interfaces;
 using UserService.Domain.Models;

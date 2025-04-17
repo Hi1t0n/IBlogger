@@ -40,7 +40,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
     }
 
     /// <inheritdoc/>.
-    public async Task<IEnumerable<Post>?> Get(CancellationToken cancellationToken)
+    public async Task<List<Post>?> Get(CancellationToken cancellationToken)
     {
         return await context.Posts
             .Include(x => x.PostCategories)

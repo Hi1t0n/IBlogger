@@ -8,7 +8,7 @@ public static class RedisKeysConstants
     /// <summary>
     /// Ключ для всех Entity, nameof(EntityType).
     /// </summary>
-    public static readonly string AllEntityKeyTemplate = "{0}s";
+    public static readonly string AllEntityKeyTemplate = "All_{0}";
     
     /// <summary>
     /// Ключ для конкретной записи Entity.

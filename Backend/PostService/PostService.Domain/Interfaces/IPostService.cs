@@ -24,7 +24,7 @@ public interface IPostService : IService<Post>
     /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Список всех постов пользователя.</returns>
-    public Task<Result<List<Post>?>> GetPostsByUserId(Guid userId, CancellationToken cancellationToken);
+    public Task<Result<IEnumerable<Post>?>> GetPostsByUserId(Guid userId, CancellationToken cancellationToken);
     
     /// <summary>
     /// Обновление поста по идентификатору.

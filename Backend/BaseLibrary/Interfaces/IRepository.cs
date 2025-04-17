@@ -22,7 +22,7 @@ public interface IRepository<T>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <typeparam name="T">Тип сущности.</typeparam>
     /// <returns>Коллекция сущностей.</returns>
-    public Task<IEnumerable<T>?> Get(CancellationToken cancellationToken);
+    public Task<List<T>?> Get(CancellationToken cancellationToken);
 
     /// <summary>
     /// Получение сущности по идентификатору.
