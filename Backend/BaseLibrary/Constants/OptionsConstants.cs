@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace UserService.Domain.Constants;
+namespace BaseLibrary.Constants;
 
 public static class OptionsConstants
 {
