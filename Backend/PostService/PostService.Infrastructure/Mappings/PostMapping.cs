@@ -1,11 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using Microsoft.EntityFrameworkCore;
-using PostService.Domain.Contracts;
-using PostService.Domain.Contracts.CategoryContracts;
+﻿using PostService.Domain.Contracts.CategoryContracts;
 using PostService.Domain.Contracts.PostContracts;
 using PostService.Domain.Models;
-using PostService.Infrastructure.Context;
-using PostService.Infrastructure.Migrations;
 
 namespace PostService.Infrastructure.Mappings;
 
@@ -32,7 +27,7 @@ public static class PostMapping
             Content = request.Content,
             CreatedOn = DateTime.UtcNow,
             ModifiedOn = DateTime.UtcNow,
-            PostCategories = existingCategory.Select(category=> new PostCategory
+            PostCategories = existingCategory.Select(category => new PostCategory
             {
                 PostId = postId,
                 CategoryId = category.Id,
@@ -56,26 +51,27 @@ public static class PostMapping
             Id = request.Id,
             Title = request.Title,
             Content = request.Content,
-            PostCategories = existingCategory.Select(category => new PostCategory
-            {
-                PostId = request.Id,
-                CategoryId = category.Id,
-                Category = category
-            }).ToList()
+            PostCategories = existingCategory.Select(category =>
+                new PostCategory
+                {
+                    PostId = request.Id,
+                    CategoryId = category.Id,
+                    Category = category
+                }).ToList()
         };
     }
-    
+
     /// <summary>
     /// <see cref="Post"/> в DTO <see cref="PostResponse"/>.
     /// </summary>
     /// <param name="post">Объект типа <see cref="Post"/>.</param>
     /// <returns><see cref="PostResponse"/>.</returns>
-    public static PostResponse ToResponse(this Post post)
+    public static PostResponse ToResponse(this Post? post)
     {
-        return new PostResponse(post.Id, post.Title, post.Content, post.UserId, post.PostCategories
-            .Select(x => 
+        return new PostResponse(post!.Id, post.Title, post.Content, post.UserId, post.PostCategories
+            .Select(x =>
                 new CategoryResponse(
-                    x.CategoryId, 
+                    x.CategoryId,
                     x.Category.Name))
             .ToList());
     }
@@ -85,11 +81,10 @@ public static class PostMapping
     /// </summary>
     /// <param name="posts">Коллекция с объектами <see cref="Post"/>.</param>
     /// <returns>Коллекция с объектами <see cref="PostResponse"/>.</returns>
-    public static IEnumerable<PostResponse> ToResponse(this IEnumerable<Post> posts)
+    public static List<PostResponse> ToResponse(this List<Post>? posts)
     {
-        return posts
-            .Select(
-                x => x.ToResponse())
+        return posts!
+            .Select(x => x.ToResponse())
             .ToList();
     }
 }

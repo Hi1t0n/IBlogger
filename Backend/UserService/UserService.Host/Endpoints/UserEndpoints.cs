@@ -49,18 +49,27 @@ public static class UserEndpoints
 
         if (!validateResult.IsValid)
         {
-            switch (validateResult.StatusCode)
+            return validateResult.StatusCode switch
             {
-                case HttpStatusCode.BadRequest:
-                    return Results.BadRequest
-                        (new Response((int)HttpStatusCode.BadRequest, validateResult.Message));
-                case HttpStatusCode.Conflict:
-                    return Results.Conflict
-                        (new Response((int)HttpStatusCode.Conflict, validateResult.Message));
-            }
+                HttpStatusCode.BadRequest => 
+                    Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, validateResult.Message)),
+                HttpStatusCode.Conflict => 
+                    Results.Conflict(new Response((int)HttpStatusCode.Conflict, validateResult.Message)),
+                _ => Results.InternalServerError()
+            };
         }
-        
-        await userService.Add(contract, cancellationToken);
+
+        var result = await userService.Add(contract, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ResultType switch
+            {
+                ResultType.BadRequest => 
+                    Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message)),
+                _ => Results.InternalServerError()
+            };
+        }
 
         return Results.Ok();
     }
@@ -80,33 +89,30 @@ public static class UserEndpoints
 
         if (!result.IsSuccess)
         {
-            switch (result.ResultType)
+            return result.ResultType switch
             {
-                case ResultType.NotFound:
-                    return Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message));
-
-                case ResultType.BadRequest:
-                    return Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message));
-            }
+                ResultType.NotFound => 
+                    Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message)),
+                ResultType.BadRequest => 
+                    Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message)),
+                _ => Results.InternalServerError()
+            };
         }
 
-        var response = result.Value!.ToResponse();
-
-        return Results.Ok(response);
+        return Results.Ok(result.Value);
     }
 
     /// <summary>
     /// Получение пользователей.
     /// </summary>
-    /// <param name="repository"><see cref="IUserRepository"/>.</param>
+    /// <param name="userService"><see cref="IUserService"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Список всех пользователей.</returns>
-    private static async Task<IResult> GetUsersAsync(IUserRepository repository, CancellationToken cancellationToken)
+    private static async Task<IResult> GetUsersAsync(IUserService userService, CancellationToken cancellationToken)
     {
-        var result = await repository.Get(cancellationToken);
-        var response = result!.Select(x => x.ToResponse());
+        var result = await userService.Get(cancellationToken);
 
-        return Results.Ok(response);
+        return Results.Ok(result.Value);
     }
 
     /// <summary>
@@ -126,29 +132,28 @@ public static class UserEndpoints
 
         if (!validateResult.IsValid)
         {
-            switch (validateResult.StatusCode)
+            return validateResult.StatusCode switch
             {
-                case HttpStatusCode.BadRequest:
-                    return Results.BadRequest
-                        (new Response((int)HttpStatusCode.BadRequest, validateResult.Message));
-                case HttpStatusCode.Conflict:
-                    return Results.Conflict
-                        (new Response((int)HttpStatusCode.Conflict, validateResult.Message));
-            }
+                HttpStatusCode.BadRequest => 
+                    Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, validateResult.Message)),
+                HttpStatusCode.Conflict => 
+                    Results.Conflict(new Response((int)HttpStatusCode.Conflict, validateResult.Message)),
+                _ => Results.InternalServerError()
+            };
         }
 
         var result = await userService.UpdateById(request, cancellationToken);
 
         if (!result.IsSuccess)
         {
-            switch (result.ResultType)
+            return result.ResultType switch
             {
-                case ResultType.NotFound:
-                    return Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message));
-
-                case ResultType.BadRequest:
-                    return Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message));
-            }
+                ResultType.NotFound => 
+                    Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message)),
+                ResultType.BadRequest => 
+                    Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message)),
+                _ => Results.InternalServerError()
+            };
         }
 
         return Results.Ok();
@@ -169,14 +174,14 @@ public static class UserEndpoints
 
         if (!result.IsSuccess)
         {
-            switch (result.ResultType)
+            return result.ResultType switch
             {
-                case ResultType.NotFound:
-                    return Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message));
-
-                case ResultType.BadRequest:
-                    return Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message));
-            }
+                ResultType.NotFound => 
+                    Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message)),
+                ResultType.BadRequest => 
+                    Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message)),
+                _ => Results.InternalServerError()
+            };
         }
 
         return Results.Ok();
@@ -186,19 +191,25 @@ public static class UserEndpoints
     /// Восстановление пользователя по <paramref name="userId"/>.
     /// </summary>
     /// <param name="userId">Идентификатор пользователя.</param>
-    /// <param name="repository"><see cref="IUserRepository"/>.</param>
+    /// <param name="userService"><see cref="IUserService"/>.</param>
     /// <param name="cancellationToken"><see cref="CancellationToken"/>.</param>
     /// <returns>Результат восстановления с данными.</returns>
     private static async Task<IResult> RestoreUserByIdAsync(Guid userId,
-        IUserRepository repository,
+        IUserService userService,
         CancellationToken cancellationToken)
     {
-        var result = await repository.RestoreUserByIdAsync(userId, cancellationToken);
+        var result = await userService.RestoreUserByIdAsync(userId, cancellationToken);
 
-        if (result is null)
+        if (!result.IsSuccess)
         {
-            return Results.NotFound
-                (new Response((int)HttpStatusCode.NotFound, $"User with Id: {userId} Not Found"));
+            return result.ResultType switch
+            {
+                ResultType.NotFound => 
+                    Results.NotFound(new Response((int)HttpStatusCode.NotFound, result.Message)),
+                ResultType.BadRequest => 
+                    Results.BadRequest(new Response((int)HttpStatusCode.BadRequest, result.Message)),
+                _ => Results.InternalServerError()
+            };
         }
 
         return Results.Ok();

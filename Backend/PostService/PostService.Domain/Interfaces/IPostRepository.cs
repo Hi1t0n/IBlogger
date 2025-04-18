@@ -1,5 +1,4 @@
-﻿using BaseLibrary.Classes.Result;
-using BaseLibrary.Interfaces;
+﻿using BaseLibrary.Interfaces;
 using PostService.Domain.Models;
 
 namespace PostService.Domain.Interfaces;

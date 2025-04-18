@@ -13,4 +13,4 @@ public record Response(int StatusCode, string? Message);
 /// <param name="StatusCode">Статус код.</param>
 /// <param name="Data"></param>
 /// <typeparam name="T"></typeparam>
-public record Response<T>(int StatusСode, T Data);
+public record Response<T>(int StatusCode, T Data);
