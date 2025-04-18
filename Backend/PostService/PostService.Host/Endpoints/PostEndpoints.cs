@@ -3,7 +3,6 @@ using BaseLibrary.Classes.Result;
 using PostService.Domain.Contracts.PostContracts;
 using PostService.Domain.Interfaces;
 using PostService.Domain.Models;
-using PostService.Infrastructure.Mappings;
 
 namespace PostService.Host.Endpoints;
 
@@ -42,7 +41,19 @@ public static class PostEndpoints
         IPostService postService,
         CancellationToken cancellationToken)
     {
-        await postService.AddPost(request, cancellationToken);
+        var result = await postService.AddPost(request, cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            return result.ResultType switch
+            {
+                ResultType.BadRequest =>
+                    Results.NotFound(new Response(StatusCodes.Status400BadRequest, result.Message)),
+                ResultType.NotFound => 
+                    Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message)),
+                _ => Results.InternalServerError(new Response(StatusCodes.Status500InternalServerError, result.Message))
+            };
+        }
 
         return Results.Ok(new Response(StatusCodes.Status200OK, String.Empty));
     }
@@ -55,10 +66,9 @@ public static class PostEndpoints
     /// <returns>Коллекция постов.</returns>
     private static async Task<IResult> GetPosts(IPostService postService, CancellationToken cancellationToken)
     {
-        var result = await postService.Get(cancellationToken);
+        var result = await postService.GetAll(cancellationToken);
 
-        return Results.Ok(
-            new Response<IEnumerable<PostResponse>>(StatusCodes.Status200OK, result.Value!.ToResponse()));
+        return Results.Ok(new Response<IEnumerable<PostResponse>>(StatusCodes.Status200OK, result.Value!));
     }
 
     /// <summary>
@@ -75,14 +85,17 @@ public static class PostEndpoints
 
         if (!result.IsSuccess)
         {
-            switch (result.ResultType)
+            return result.ResultType switch
             {
-                case ResultType.NotFound:
-                    return Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message));
-            }
+                ResultType.BadRequest =>
+                    Results.NotFound(new Response(StatusCodes.Status400BadRequest, result.Message)),
+                ResultType.NotFound => 
+                    Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message)),
+                _ => Results.InternalServerError(new Response(StatusCodes.Status500InternalServerError, result.Message))
+            };
         }
 
-        return Results.Ok(new Response<PostResponse>(StatusCodes.Status200OK, result.Value!.ToResponse()));
+        return Results.Ok(new Response<PostResponse>(StatusCodes.Status200OK, result.Value!));
     }
 
     /// <summary>
@@ -97,8 +110,7 @@ public static class PostEndpoints
     {
         var posts = await postService.GetPostsByUserId(id, cancellationToken);
 
-        return Results.Ok(
-            new Response<IEnumerable<PostResponse>>(StatusCodes.Status200OK, posts.Value.ToResponse()));
+        return Results.Ok(new Response<IEnumerable<PostResponse>>(StatusCodes.Status200OK, posts.Value!));
     }
 
     /// <summary>
@@ -112,15 +124,18 @@ public static class PostEndpoints
     private static async Task<IResult> UpdatePostById(PostUpdateRequest request,
         IPostService postService, ICategoryRepository categoryRepository, CancellationToken cancellationToken)
     {
-        var result = await postService.UpdateById(request,cancellationToken);
+        var result = await postService.UpdateById(request, cancellationToken);
 
         if (!result.IsSuccess)
         {
-            switch (result.ResultType)
+            return result.ResultType switch
             {
-                case ResultType.NotFound:
-                    return Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message));
-            }
+                ResultType.BadRequest =>
+                    Results.NotFound(new Response(StatusCodes.Status400BadRequest, result.Message)),
+                ResultType.NotFound => 
+                    Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message)),
+                _ => Results.InternalServerError(new Response(StatusCodes.Status500InternalServerError, result.Message))
+            };
         }
 
         return Results.Ok(new Response(StatusCodes.Status200OK, string.Empty));
@@ -140,11 +155,14 @@ public static class PostEndpoints
 
         if (!result.IsSuccess)
         {
-            switch (result.ResultType)
+            return result.ResultType switch
             {
-                case ResultType.NotFound:
-                    return Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message));
-            }
+                ResultType.BadRequest =>
+                    Results.NotFound(new Response(StatusCodes.Status400BadRequest, result.Message)),
+                ResultType.NotFound => 
+                    Results.NotFound(new Response(StatusCodes.Status404NotFound, result.Message)),
+                _ => Results.InternalServerError(new Response(StatusCodes.Status500InternalServerError, result.Message))
+            };
         }
 
         return Results.Ok(new Response(StatusCodes.Status200OK, string.Empty));

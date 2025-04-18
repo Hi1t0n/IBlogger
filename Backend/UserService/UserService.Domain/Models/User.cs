@@ -52,14 +52,4 @@ public class User : BaseModel
     /// Связывающее свойство с <see cref="Role"/>.
     /// </summary>
     public Role? Role { get; set; }
-
-    /// <summary>
-    /// Конвертация данных модели в ответ.
-    /// </summary>
-    /// <returns><see cref="UserResponse"/>.</returns>
-    public UserResponse ToResponse()
-    {
-        return new UserResponse(Id, UserName!, Role!.RoleName!, Email, EmailConfirmed,
-            PhoneNumber, PhoneNumberConfirmed, CreatedOn, ModifiedOn);
-    }
 }

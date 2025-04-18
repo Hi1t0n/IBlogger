@@ -38,23 +38,23 @@ public class PostService : IPostService
     }
 
     /// <inheritdoc/>
-    public async Task<Result<Post?>> AddPost(AddPostRequest request, CancellationToken cancellationToken)
+    public async Task<Result<PostResponse?>> AddPost(AddPostRequest request, CancellationToken cancellationToken)
     {
         var existCategories = await _categoryRepository.GetExistCategories(request.Categories);
 
         if (!existCategories.Any())
         {
-            return Result<Post>.Failed(string.Format(ResponseStringConstants.RequiredAttributeResponseStringTemplate,
+            return Result<PostResponse>.Failed(string.Format(ResponseStringConstants.RequiredAttributeResponseStringTemplate,
                 nameof(Post.PostCategories)), ResultType.BadRequest);
         }
 
         var post = await _postRepository.Add(request.ToModel(existCategories), cancellationToken);
 
-        return Result<Post>.Success(post);
+        return Result<PostResponse>.Success(post.ToResponse());
     }
 
     /// <inheritdoc/>
-    public async Task<Result<IEnumerable<Post>?>> Get(CancellationToken cancellationToken)
+    public async Task<Result<List<PostResponse>?>> GetAll(CancellationToken cancellationToken)
     {
         var cacheString = await _distributedCache.GetStringAsync(
             string.Format(RedisKeysConstants.AllEntityKeyTemplate, nameof(Post)),
@@ -63,8 +63,9 @@ public class PostService : IPostService
         if (cacheString is not null)
         {
             var cachePosts =
-                JsonSerializer.Deserialize<IEnumerable<Post>>(cacheString, OptionsConstants.JsonSerializerOptions);
-            return Result<IEnumerable<Post>>.Success(cachePosts);
+                JsonSerializer.Deserialize<List<Post>>(cacheString, OptionsConstants.JsonSerializerOptions);
+            
+            return Result<List<PostResponse>>.Success(cachePosts.ToResponse());
         }
 
         var posts = await _postRepository.Get(cancellationToken);
@@ -77,11 +78,11 @@ public class PostService : IPostService
                 cancellationToken);
         }
 
-        return Result<IEnumerable<Post>>.Success(posts);
+        return Result<List<PostResponse>>.Success(posts.ToResponse());
     }
 
     /// <inheritdoc/>
-    public async Task<Result<Post?>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<PostResponse?>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var cacheString = await _distributedCache.GetStringAsync(
             string.Format(RedisKeysConstants.EntityWithIdKeyTemplate, id, nameof(Post)),
@@ -91,7 +92,7 @@ public class PostService : IPostService
         {
             var cachePost = JsonSerializer.Deserialize<Post>(cacheString, OptionsConstants.JsonSerializerOptions);
 
-            Result<Post>.Success(cachePost);
+            Result<PostResponse>.Success(cachePost.ToResponse());
         }
 
         var post = await _postRepository.GetById(id, cancellationToken);
@@ -105,13 +106,13 @@ public class PostService : IPostService
         }
 
         return post is not null
-            ? Result<Post>.Failed(string.Format(ResponseStringConstants.NotFoundResponseStringTemplate, nameof(Post),
+            ? Result<PostResponse>.Failed(string.Format(ResponseStringConstants.NotFoundResponseStringTemplate, nameof(Post),
                 nameof(id).ToUpper(), id), ResultType.NotFound)
-            : Result<Post>.Success(post);
+            : Result<PostResponse>.Success(post.ToResponse());
     }
 
     /// <inheritdoc/>
-    public async Task<Result<IEnumerable<Post>?>> GetPostsByUserId(Guid userId, CancellationToken cancellationToken)
+    public async Task<Result<List<PostResponse>?>> GetPostsByUserId(Guid userId, CancellationToken cancellationToken)
     {
         var cacheString = await _distributedCache.GetStringAsync(
             string.Format(RedisKeysConstants.EntityWithIdKeyTemplate, userId, $"{nameof(Post)}User"),
@@ -120,9 +121,9 @@ public class PostService : IPostService
         if (cacheString is not null)
         {
             var cacheUserPosts =
-                JsonSerializer.Deserialize<IEnumerable<Post>>(cacheString, OptionsConstants.JsonSerializerOptions);
+                JsonSerializer.Deserialize<List<Post>>(cacheString, OptionsConstants.JsonSerializerOptions);
 
-            return Result<IEnumerable<Post>>.Success(cacheUserPosts);
+            return Result<List<PostResponse>>.Success(cacheUserPosts.ToResponse());
         }
 
         var posts = await _postRepository.GetPostsByUserId(userId, cancellationToken);
@@ -135,17 +136,17 @@ public class PostService : IPostService
                 cancellationToken);
         }
 
-        return Result<IEnumerable<Post>>.Success(posts);
+        return Result<List<PostResponse>>.Success(posts.ToResponse());
     }
 
     /// <inheritdoc/>
-    public async Task<Result<Post?>> UpdateById(PostUpdateRequest request, CancellationToken cancellationToken)
+    public async Task<Result<PostResponse?>> UpdateById(PostUpdateRequest request, CancellationToken cancellationToken)
     {
         var existingCategory = await _categoryRepository.GetExistCategories(request.Categories);
 
         if (!existingCategory.Any())
         {
-            return Result<Post>.Failed(string.Format(ResponseStringConstants.RequiredAttributeResponseStringTemplate,
+            return Result<PostResponse>.Failed(string.Format(ResponseStringConstants.RequiredAttributeResponseStringTemplate,
                 nameof(Post.PostCategories)), ResultType.BadRequest);
         }
 
@@ -153,32 +154,30 @@ public class PostService : IPostService
 
         if (updatedPost is null)
         {
-            return Result<Post>.Failed(string.Format(ResponseStringConstants.NotFoundResponseStringTemplate,
-                nameof(Post),
-                nameof(request.Id).ToUpper(), request.Id), ResultType.NotFound);
+            return Result<PostResponse>.Failed(string.Format(ResponseStringConstants.NotFoundResponseStringTemplate,
+                nameof(Post), nameof(request.Id).ToUpper(), request.Id), ResultType.NotFound);
         }
 
         await _distributedCache.RemoveAsync(string.Format(RedisKeysConstants.EntityWithIdKeyTemplate, request.Id, nameof(Post)),
             cancellationToken);
 
-        return Result<Post>.Success(updatedPost);
+        return Result<PostResponse>.Success(updatedPost.ToResponse());
     }
 
     /// <inheritdoc/>
-    public async Task<Result<Post?>> DeleteById(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<PostResponse?>> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var post = await _postRepository.DeleteById(id, cancellationToken);
 
         if (post is null)
         {
-            return Result<Post>.Failed(string.Format(ResponseStringConstants.NotFoundResponseStringTemplate,
-                nameof(Post),
-                nameof(id).ToUpper(), id), ResultType.NotFound);
+            return Result<PostResponse>.Failed(string.Format(ResponseStringConstants.NotFoundResponseStringTemplate,
+                nameof(Post), nameof(id).ToUpper(), id), ResultType.NotFound);
         }
         
         await _distributedCache.RemoveAsync(string.Format(RedisKeysConstants.EntityWithIdKeyTemplate, id, nameof(Post)),
             cancellationToken);
 
-        return Result<Post>.Success(post);
+        return Result<PostResponse>.Success(post.ToResponse());
     }
 }
