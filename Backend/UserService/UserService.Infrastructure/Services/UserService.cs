@@ -20,9 +20,9 @@ public class UserService : IUserService
         _distributedCache = distributedCache;
     }
 
-    public async Task<Result<UserResponse?>> Add(AddUserRequest request, CancellationToken cancellationToken)
+    public async Task<Result<UserResponse?>> AddUserAsync(AddUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.Add(request.ToModel(), cancellationToken);
+        var user = await _userRepository.AddUserAsync(request.ToModel(), cancellationToken);
 
         if (user is null)
         {
@@ -38,7 +38,7 @@ public class UserService : IUserService
         return Result<UserResponse>.Success(user.ToResponse());
     }
 
-    public async Task<Result<List<UserResponse>?>> Get(CancellationToken cancellationToken)
+    public async Task<Result<List<UserResponse>?>> GetUsersAsync(CancellationToken cancellationToken)
     {
         var cacheString =
             await _distributedCache.GetStringAsync(string.Format(RedisKeysConstants.AllEntityKeyTemplate, nameof(User)),
@@ -52,7 +52,7 @@ public class UserService : IUserService
             return Result<List<UserResponse>?>.Success(cacheUsers!.ToResponse());
         }
 
-        var users = await _userRepository.Get(cancellationToken);
+        var users = await _userRepository.GetUsersAsync(cancellationToken);
 
         await _distributedCache.SetStringAsync(string.Format(RedisKeysConstants.AllEntityKeyTemplate, nameof(User)),
             JsonSerializer.Serialize(users, OptionsConstants.JsonSerializerOptions),
@@ -62,7 +62,7 @@ public class UserService : IUserService
         return Result<List<UserResponse>?>.Success(users!.ToResponse());
     }
 
-    public async Task<Result<UserResponse?>> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<UserResponse?>> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var cacheString =
             await _distributedCache.GetStringAsync(string.Format(RedisKeysConstants.EntityWithIdKeyTemplate, id, nameof(User)),
@@ -75,7 +75,7 @@ public class UserService : IUserService
             return Result<UserResponse?>.Success(cacheUser!.ToResponse());
         }
 
-        var user = await _userRepository.GetById(id, cancellationToken);
+        var user = await _userRepository.GetUserByIdAsync(id, cancellationToken);
 
         if (user is null)
         {
@@ -91,9 +91,9 @@ public class UserService : IUserService
         return Result<UserResponse?>.Success(user.ToResponse());
     }
 
-    public async Task<Result<UserResponse?>> UpdateById(UpdateUserRequest request, CancellationToken cancellationToken)
+    public async Task<Result<UserResponse?>> UpdateUserByIdAsync(UpdateUserRequest request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.UpdateById(request.ToModel(), cancellationToken);
+        var user = await _userRepository.UpdateUserById(request.ToModel(), cancellationToken);
 
         if (user is null)
         {
@@ -104,12 +104,12 @@ public class UserService : IUserService
         await _distributedCache.RemoveAsync(string.Format(RedisKeysConstants.EntityWithIdKeyTemplate, request.Id, nameof(User)),
             cancellationToken);
 
-        return Result<UserResponse>.Success(user.ToResponse());
+        return Result<UserResponse>.Success(null);
     }
 
-    public async Task<Result<UserResponse?>> DeleteById(Guid id, CancellationToken cancellationToken)
+    public async Task<Result<UserResponse?>> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.DeleteById(id, cancellationToken);
+        var user = await _userRepository.DeleteUserById(id, cancellationToken);
 
         if (user is null)
         {
@@ -120,7 +120,7 @@ public class UserService : IUserService
         await _distributedCache.RemoveAsync(string.Format(RedisKeysConstants.EntityWithIdKeyTemplate, id, nameof(User)),
             cancellationToken);
 
-        return Result<UserResponse>.Success(user.ToResponse());
+        return Result<UserResponse>.Success(null);
     }
 
     public async Task<Result<UserResponse?>> RestoreUserByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -133,6 +133,6 @@ public class UserService : IUserService
                 nameof(User), nameof(id).ToUpper(), id), ResultType.NotFound);
         }
 
-        return Result<UserResponse>.Success(user.ToResponse());
+        return Result<UserResponse>.Success(null);
     }
 }

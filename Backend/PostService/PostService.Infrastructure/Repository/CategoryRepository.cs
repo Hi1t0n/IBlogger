@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PostService.Domain.Contracts;
 using PostService.Domain.Interfaces;
 using PostService.Domain.Models;
 using PostService.Infrastructure.Context;
@@ -11,21 +12,21 @@ namespace PostService.Infrastructure.Repository;
 /// <param name="context"><see cref="ApplicationDbContext"/>.</param>
 public class CategoryRepository(ApplicationDbContext context) : ICategoryRepository
 {
-    /// <inheritdoc />.
-    public async Task<Category?> Add(Category entity, CancellationToken cancellationToken)
+    /// <inheritdoc />
+    public async Task<Category?> Add(Category category, CancellationToken cancellationToken)
     {
-        await context.Categories.AddAsync(entity, cancellationToken);
+        await context.Categories.AddAsync(category, cancellationToken);
 
-        return entity;
+        return category;
     }
 
-    /// <inheritdoc />.
+    /// <inheritdoc />
     public async Task<List<Category>?> Get(CancellationToken cancellationToken)
     {
         return await context.Categories.ToListAsync(cancellationToken);
     }
 
-    /// <inheritdoc />.
+    /// <inheritdoc />
     public async Task<Category?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -38,7 +39,7 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
         return category;
     }
 
-    /// <inheritdoc />.
+    /// <inheritdoc />
     public async Task<List<Category>?> GetExistCategories(List<Guid> categories)
     {
         return await context.Categories
@@ -46,7 +47,7 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
             .ToListAsync();
     }
 
-    /// <inheritdoc />.
+    /// <inheritdoc />
     public async Task<Category?> UpdateById(Category updateData, CancellationToken cancellationToken)
     {
         var category = await context.Categories
@@ -64,7 +65,7 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
         return category;
     }
 
-    /// <inheritdoc />.
+    /// <inheritdoc />
     public async Task<Category?> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var category = await context.Categories
@@ -101,5 +102,15 @@ public class CategoryRepository(ApplicationDbContext context) : ICategoryReposit
         });
 
         return category;
+    }
+    
+    /// <inheritdoc />
+    public async Task<List<CategoryPostCount>> CountPostsForCategories(CancellationToken cancellationToken)
+    {
+        return await context.Categories
+            .AsNoTracking()
+            .Select(x => new CategoryPostCount(x.Name, x.PostCategories.Count))
+            .OrderByDescending(x => x.CategoryName)
+            .ToListAsync(cancellationToken);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BaseLibrary.Classes;
-using UserService.Domain.Contacts;
 
 namespace UserService.Domain.Models;
 

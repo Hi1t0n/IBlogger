@@ -59,7 +59,7 @@ public static class UserEndpoints
             };
         }
 
-        var result = await userService.Add(contract, cancellationToken);
+        var result = await userService.AddUserAsync(contract, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -85,7 +85,7 @@ public static class UserEndpoints
         IUserService userService,
         CancellationToken cancellationToken)
     {
-        var result = await userService.GetById(userId, cancellationToken);
+        var result = await userService.GetUserByIdAsync(userId, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -110,7 +110,7 @@ public static class UserEndpoints
     /// <returns>Список всех пользователей.</returns>
     private static async Task<IResult> GetUsersAsync(IUserService userService, CancellationToken cancellationToken)
     {
-        var result = await userService.Get(cancellationToken);
+        var result = await userService.GetUsersAsync(cancellationToken);
 
         return Results.Ok(result.Value);
     }
@@ -142,7 +142,7 @@ public static class UserEndpoints
             };
         }
 
-        var result = await userService.UpdateById(request, cancellationToken);
+        var result = await userService.UpdateUserByIdAsync(request, cancellationToken);
 
         if (!result.IsSuccess)
         {
@@ -170,7 +170,7 @@ public static class UserEndpoints
         IUserService userService,
         CancellationToken cancellationToken)
     {
-        var result = await userService.DeleteById(userId, cancellationToken);
+        var result = await userService.DeleteUserByIdAsync(userId, cancellationToken);
 
         if (!result.IsSuccess)
         {

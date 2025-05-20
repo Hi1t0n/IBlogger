@@ -25,7 +25,7 @@ public static class ValidateDataService
             return ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Incorrect Username");
         }
 
-        if (await userRepository.ExistByUserName(contract.UserName.ToLower()))
+        if (await userRepository.ExistByUserNameAsync(contract.UserName.ToLower()))
         {
             return  ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Username is already taken");
         }
@@ -40,7 +40,7 @@ public static class ValidateDataService
             return ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Incorrect Email");
         }
         
-        if (await userRepository.ExistByEmail(contract.Email!.ToLower()))
+        if (await userRepository.ExistByEmailAsync(contract.Email!.ToLower()))
         {
             return ValidateResult.Invalid(HttpStatusCode.Conflict, $"Email is already taken");
         }
@@ -50,7 +50,7 @@ public static class ValidateDataService
             return ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Incorrect phone number");
         }
         
-        if (await userRepository.ExistByPhoneNumber(contract.PhoneNumber))
+        if (await userRepository.ExistByPhoneNumberAsync(contract.PhoneNumber))
         {
             return ValidateResult.Invalid(HttpStatusCode.Conflict, $"Phone number is already taken");
         }
@@ -72,7 +72,7 @@ public static class ValidateDataService
             return ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Incorrect Username");
         }
 
-        if (await userRepository.ExistByUserName(contract.UserName.ToLower()))
+        if (await userRepository.ExistByUserNameAsync(contract.UserName.ToLower()))
         {
             return  ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Username is already taken");
         }
@@ -82,7 +82,7 @@ public static class ValidateDataService
             return ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Incorrect Email");
         }
         
-        if (await userRepository.ExistByEmail(contract.Email!.ToLower()))
+        if (await userRepository.ExistByEmailAsync(contract.Email!.ToLower()))
         {
             return ValidateResult.Invalid(HttpStatusCode.Conflict, $"Email is already taken");
         }
@@ -92,7 +92,7 @@ public static class ValidateDataService
             return ValidateResult.Invalid(HttpStatusCode.BadRequest, $"Incorrect phone number");
         }
         
-        if (await userRepository.ExistByPhoneNumber(contract.PhoneNumber))
+        if (await userRepository.ExistByPhoneNumberAsync(contract.PhoneNumber))
         {
             return ValidateResult.Invalid(HttpStatusCode.Conflict, $"Phone number is already taken");
         }
