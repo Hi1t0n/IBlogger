@@ -14,9 +14,9 @@ public class UserRepository : IUserRepository
     {
         _context = context;
     }
-    
+
     ///<inheritdoc/>
-    public async Task<User?> Add(User user, CancellationToken cancellationToken)
+    public async Task<User?> AddUserAsync(User user, CancellationToken cancellationToken)
     {
         var result = await _context.Users.AddAsync(user, cancellationToken);
 
@@ -26,10 +26,10 @@ public class UserRepository : IUserRepository
     }
 
     ///<inheritdoc/>
-    public async Task<User?> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<User?> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var user = await _context.Users
-            .Include(x=> x.Role)
+            .Include(x => x.Role)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete, cancellationToken);
 
@@ -39,11 +39,11 @@ public class UserRepository : IUserRepository
     }
 
     ///<inheritdoc/>
-    public async Task<List<User>?> Get(CancellationToken cancellationToken)
+    public async Task<List<User>?> GetUsersAsync(CancellationToken cancellationToken)
     {
         var users = await _context.Users
-            .Include(x=> x.Role)
-            .Where(x=> !x.IsDelete)
+            .Include(x => x.Role)
+            .Where(x => !x.IsDelete)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
@@ -51,80 +51,72 @@ public class UserRepository : IUserRepository
     }
 
     ///<inheritdoc/>
-    public async Task<User?> UpdateById(User user, CancellationToken cancellationToken)
+    public async Task<int?> UpdateUserById(User user, CancellationToken cancellationToken)
     {
-        var updatingEntity = await _context.Users.FirstOrDefaultAsync(x => x.Id == user.Id, cancellationToken);
+        var updatingResult = await _context.Users
+            .Where(x => x.Id == user.Id)
+            .ExecuteUpdateAsync(setter => setter
+                .SetProperty(x => x.UserName, user.UserName)
+                .SetProperty(x => x.Email, user.Email)
+                .SetProperty(x => x.PhoneNumber, user.PhoneNumber)
+                .SetProperty(x => x.ModifiedOn, DateTime.UtcNow), cancellationToken);
 
-        if (updatingEntity is null)
+
+        if (updatingResult <= 0)
         {
             return null;
         }
 
-        updatingEntity.UserName = user.UserName;
-        updatingEntity.Email = user.Email;
-        updatingEntity.PhoneNumber = user.PhoneNumber;
-        updatingEntity.ModifiedOn = DateTime.UtcNow;
-
-        var result = _context.Users.Update(updatingEntity);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return result.Entity;
+        return updatingResult;
     }
 
     ///<inheritdoc/>
-    public async Task<User?> DeleteById(Guid id, CancellationToken cancellationToken)
+    public async Task<int?> DeleteUserById(Guid id, CancellationToken cancellationToken)
     {
-        var deletingUser =
-            await _context.Users.FirstOrDefaultAsync(x => x.Id == id && !x.IsDelete, cancellationToken);
+        var deletingResult = await _context.Users
+            .Where(x => x.Id == id && !x.IsDelete)
+            .ExecuteUpdateAsync(setter => setter
+                .SetProperty(x => x.IsDelete, true), cancellationToken);
 
-        if (deletingUser is null)
+        if (deletingResult <= 0)
         {
             return null;
         }
 
-        deletingUser.IsDelete = true;
 
-        var result = _context.Users.Update(deletingUser);
-        await _context.SaveChangesAsync(cancellationToken);
-        
-
-        return result.Entity;
+        return deletingResult;
     }
 
     ///<inheritdoc/>
-    public async Task<User?> RestoreUserByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<int?> RestoreUserByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var restoringUser =
-            await _context.Users.FirstOrDefaultAsync(x => x.Id == id && x.IsDelete == true, cancellationToken);
+        var restoringResult = await _context.Users
+            .Where(x => x.Id == id && x.IsDelete)
+            .ExecuteUpdateAsync(setter => setter
+                .SetProperty(x => x.IsDelete, false), cancellationToken);
 
-        if (restoringUser is null)
+        if (restoringResult <= 0)
         {
             return null;
         }
 
-        restoringUser.IsDelete = false;
-
-        var result = _context.Users.Update(restoringUser);
-
-        await _context.SaveChangesAsync(cancellationToken);
-        
-        return result.Entity;
+        return restoringResult;
     }
 
     ///<inheritdoc/>
-    public async Task<bool> ExistByEmail(string? email)
+    public async Task<bool> ExistByEmailAsync(string? email)
     {
         return await _context.Users.AnyAsync(x => x.Email == email);
     }
 
     ///<inheritdoc/>
-    public async Task<bool> ExistByPhoneNumber(string? phoneNumber)
+    public async Task<bool> ExistByPhoneNumberAsync(string? phoneNumber)
     {
         return await _context.Users.AnyAsync(x => x.PhoneNumber == phoneNumber);
     }
 
     ///<inheritdoc/>
-    public async Task<bool> ExistByUserName(string userName)
+    public async Task<bool> ExistByUserNameAsync(string userName)
     {
         return await _context.Users.AnyAsync(x => x.UserName == userName);
     }

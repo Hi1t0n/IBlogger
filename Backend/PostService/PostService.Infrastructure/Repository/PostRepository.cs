@@ -6,31 +6,31 @@ using PostService.Infrastructure.Context;
 
 namespace PostService.Infrastructure.Repository;
 
-/// <inheritdoc cref="IPostRepository"/>. 
+/// <inheritdoc cref="IPostRepository"/>
 public class PostRepository(ApplicationDbContext context) : IPostRepository
 {
-    /// <inheritdoc/>.
-    public async Task<Post?> Add(Post entity, CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public async Task<Post?> Add(Post post, CancellationToken cancellationToken)
     {
-        if (!entity.PostCategories.Any())
+        if (!post.PostCategories.Any())
         {
-            Result<Post>.Failed($"{nameof(entity.PostCategories)} не может быть пустым.", ResultType.BadRequest);
+            Result<Post>.Failed($"{nameof(post.PostCategories)} не может быть пустым.", ResultType.BadRequest);
         }
 
         try
         {
             var strategy = context.Database.CreateExecutionStrategy();
-            
+
             await strategy.ExecuteAsync(async () =>
             {
                 await context.Database.BeginTransactionAsync(cancellationToken);
-                await context.Posts.AddAsync(entity, cancellationToken);
+                await context.Posts.AddAsync(post, cancellationToken);
 
                 await context.SaveChangesAsync(cancellationToken);
                 await context.Database.CommitTransactionAsync(cancellationToken);
             });
-            
-            return entity;
+
+            return post;
         }
         catch (Exception exception)
         {
@@ -39,7 +39,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
         }
     }
 
-    /// <inheritdoc/>.
+    /// <inheritdoc/>
     public async Task<List<Post>?> Get(CancellationToken cancellationToken)
     {
         return await context.Posts
@@ -48,7 +48,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
             .ToListAsync(cancellationToken);
     }
 
-    /// <inheritdoc/>.
+    /// <inheritdoc/>
     public async Task<Post?> GetById(Guid id, CancellationToken cancellationToken)
     {
         var post = await context.Posts
@@ -59,7 +59,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
         return post;
     }
 
-    /// <inheritdoc/>.
+    /// <inheritdoc/>
     public async Task<List<Post>?> GetPostsByUserId(Guid userId, CancellationToken cancellationToken)
     {
         return await context.Posts
@@ -70,7 +70,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
             .ToListAsync(cancellationToken);
     }
 
-    /// <inheritdoc/>.
+    /// <inheritdoc/>
     public async Task<Post?> UpdateById(Post updateData, CancellationToken cancellationToken)
     {
         var post = await context.Posts
@@ -109,7 +109,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
         }
     }
 
-    /// <inheritdoc/>.
+    /// <inheritdoc/>
     public async Task<Post?> DeleteById(Guid id, CancellationToken cancellationToken)
     {
         var post = await context.Posts
@@ -124,7 +124,7 @@ public class PostRepository(ApplicationDbContext context) : IPostRepository
         try
         {
             var strategy = context.Database.CreateExecutionStrategy();
-            
+
             await strategy.ExecuteAsync(async () =>
             {
                 await context.Database.BeginTransactionAsync(cancellationToken);
